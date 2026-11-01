@@ -4,7 +4,7 @@ PRAGMA journal_mode = WAL;
 CREATE TABLE IF NOT EXISTS series (
     id INTEGER PRIMARY KEY,
     title TEXT NOT NULL,
-    series_type TEXT NOT NULL CHECK (series_type IN ('Manga', 'Manhwa', 'Manhua', 'Novel', 'Webtoon')),
+    series_type TEXT NOT NULL CHECK (series_type IN ('Manga', 'Manhwa', 'Manhua', 'Novel', 'Webtoon', 'Comic')),
     author TEXT,
     status TEXT NOT NULL DEFAULT 'Reading' CHECK (status IN ('Reading', 'Completed', 'On Hold', 'Dropped')),
     started_at TEXT,
