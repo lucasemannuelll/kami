@@ -50,9 +50,9 @@ def resolve_series(conn: sqlite3.Connection, search_query: str) -> Resolution:
     return NotFound(query=cleaned_query)
 
 def _fetch(conn: sqlite3.Connection, sql_query: str, params: tuple) -> list[SeriesRow]:
-    fetched_rows = conn.execute(sql_query, params).fetchall()
+    series_records = conn.execute(sql_query, params).fetchall()
 
-    return [SeriesRow(id=row["id"], title=row["title"], series_type=row["type"]) for row in fetched_rows]
+    return [SeriesRow(id=series_record["id"], title=series_record["title"], series_type=series_record["type"]) for series_record in series_records]
 
-def _escape_like(s: str) -> str:
-    return s.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+def _escape_like(text: str) -> str:
+    return text.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")

@@ -4,12 +4,12 @@ PRAGMA journal_mode = WAL;
 CREATE TABLE IF NOT EXISTS series (
     id INTEGER PRIMARY KEY,
     title TEXT NOT NULL,
-    type TEXT NOT NULL CHECK (type IN ('Manga', 'Manhwa', 'Manhua', 'Novel', 'Webtoon')),
+    series_type TEXT NOT NULL CHECK (series_type IN ('Manga', 'Manhwa', 'Manhua', 'Novel', 'Webtoon')),
     author TEXT,
     status TEXT NOT NULL DEFAULT 'Reading' CHECK (status IN ('Reading', 'Completed', 'On Hold', 'Dropped')),
     started_at TEXT,
     
-    UNIQUE (title, type)
+    UNIQUE (title, series_type)
 );
 
 CREATE TABLE IF NOT EXISTS tags (
@@ -41,4 +41,4 @@ CREATE TABLE IF NOT EXISTS chapters (
 CREATE INDEX IF NOT EXISTS idx_chapters_series ON chapters(series_id);
 CREATE INDEX IF NOT EXISTS idx_chapters_read_date ON chapters(read_date);
 CREATE INDEX IF NOT EXISTS idx_series_status ON series(status);
-CREATE INDEX IF NOT EXISTS idx_series_type ON series(type);
+CREATE INDEX IF NOT EXISTS idx_series_type ON series(series_type);
