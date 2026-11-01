@@ -9,6 +9,12 @@ from kami.resolve import Ambiguous, NotFound
 console = Console(stderr=False)
 error_console = Console(stderr=True)
 
+class ResolveExit(Exception):
+    def __init__(self, code: int) -> None:
+        super().__init__(f"resolve failed (exit {code})")
+        self.code = code
+
+
 def emit(text: str, *, json_mode: bool, log_result: dict[str, Any]) -> None:
     if json_mode:
         typer_echo(json.dumps(log_result))
@@ -144,9 +150,9 @@ def resolve_or_exit(conn: Any, query: str, *, json_mode: bool) -> int | None:
 
     if isinstance(resolution_result, Ambiguous):
         render_ambiguous(resolution_result.query, resolution_result.candidates, json_mode=json_mode)
-        return None
+        return ResolveExit(2)
     if isinstance(resolution_result, NotFound):
         render_not_found(resolution_result.query, resolution_result.candidates, json_mode=json_mode)
-        return None
+        return ResolveExit(3)
 
     return resolution_result.series.id
