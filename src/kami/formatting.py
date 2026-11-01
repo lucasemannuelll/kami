@@ -45,16 +45,16 @@ def render_list(summaries: list[SeriesSummary], *, json_mode: bool) -> None:
 
     console.print(table)
 
-def _summary_to_dict(s: SeriesSummary) -> dict[str, Any]: 
+def _summary_to_dict(summary: SeriesSummary) -> dict[str, Any]: 
     return {
-        "id": s.id,
-        "title": s.title,
-        "type": s.type,
-        "status": s.status,
-        "author": s.author,
-        "tags": list(s.tags),
-        "chapters_read": s.chapters_read,
-        "last_read": s.last_read,
+        "id": summary.id,
+        "title": summary.title,
+        "type": summary.series_type,
+        "status": summary.status,
+        "author": summary.author,
+        "tags": list(summary.tags),
+        "chapters_read": summary.chapters_read,
+        "last_read": summary.last_read,
     }
 
 def render_show(detail: SeriesDetail, *, json_mode: bool) -> None:
@@ -88,7 +88,7 @@ def _detail_to_dict(detail: SeriesDetail) -> dict[str, Any]:
     return {
         "id": series.id,
         "title": series.title,
-        "type": series.type,
+        "type": series.series_type,
         "status": series.status,
         "author": series.author,
         "started_at": series.started_at,

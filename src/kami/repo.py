@@ -126,7 +126,7 @@ def list_series(conn: sqlite3.Connection, *, status: str | None = None, series_t
 
     sql_query = """
         SELECT
-            s.id, s.title, s.type, s.status, s.author,
+            s.id, s.title, s.series_type, s.status, s.author,
             (SELECT COUNT(*) FROM chapters c WHERE c.series_id = s.id) AS chapters_read,
             (SELECT MAX(c.read_date) FROM chapters c WHERE c.series_id = s.id) AS last_read
         FROM series s
