@@ -13,7 +13,7 @@ class Series:
     series_type: str
     author: str | None
     status: str
-    started: str | None
+    started_at: str | None
     tags: tuple[str, ...] = field(default_factory=tuple)
 
 @dataclass(frozen=True)
