@@ -36,7 +36,11 @@ def register(app: typer.Typer) -> None:
         updated_fields: dict[str, object] = {}
 
         with connect(db_path) as conn:
-            series_id = resolve_or_exit(conn, query, json_mode=ctx.obj["json"])
+            series_id = resolve_or_exit(
+                            conn,
+                            query,
+                            json_mode=ctx.obj["json"],
+                        )
 
             try:
                 update_series(
@@ -91,10 +95,16 @@ def _summarize(updated_fields: dict[str, object]) -> str:
 
     for field_name in ("title", "status", "author"):
         if field_name in updated_fields:
-            summary_parts.append(f"{field_name}={updated_fields[field_name]}")
+            summary_parts.append(
+                f"{field_name}={updated_fields[field_name]}"
+            )
     if "tags_added" in updated_fields:
-        summary_parts.append(f"+{','.join(updated_fields['tags_added'])}")
+        summary_parts.append(
+            f"+{','.join(updated_fields['tags_added'])}"
+        )
     if "tags_removed" in updated_fields:
-        summary_parts.append(f"-{','.join(updated_fields['tags_removed'])}")
+        summary_parts.append(
+            f"-{','.join(updated_fields['tags_removed'])}"
+        )
 
     return " ".join(summary_parts)
