@@ -34,7 +34,84 @@ def register(app: typer.Typer) -> None:
         db_path = resolve_db_path(ctx.obj["db"])
 
         with connect(db_path) as conn:
-            series_id = resolve_or_exit(conn, query, json_mode=ctx.obj["json"])
-
+            series_id = resolve_or_exit(
+                            conn,
+                            query,
+                            json_mode=ctx.obj["json"]
+                        )
             
+            if dry_run:
+                _report_dry_run(
+                    conn,
+                    series_id,
+                    chapters,
+                    read_date, ctx.obj["json"]
+                )
+                return
+            log_chapters(
+                conn,
+                series_id,
+                chapters,
+                read_date,
+                ctx.obj["json"],
+            )
 
+        render_log_result(
+            title=query,
+            chapters=chapters,
+            read_date=read_date,
+            json_mode=ctx.obj["json"],
+            dry_run=False,
+        )
+
+
+def _resolve_date(date_input: str | None) -> None:
+    if date_input is None:
+        return today_iso()
+    try:
+        return parse_date(date_input).isoformat()
+    except DateParseError as e:
+        raise typer.BadParameter(str(e), param_hint="--date") from e
+
+
+def _parse_spec(chapter_spec: str) -> list[str]:
+    try:
+        return parse_chapter_spec(chapter_spec)
+    except ChapterSpecError as e:
+        raise typer.BadParameter(str(e), param_hint="SPEC") from e
+
+
+def _report_dry_run(
+    conn,
+    series_id: int,
+    chapters: list[str],
+    read_date: str,
+    json_mode: bool
+) -> None:
+    new: list[str] = []
+    update: list[str] = []
+
+    for ch in chapters:
+        exists, _prev = chapter_exists(conn, series_id, ch)
+        (update if exists else new).append(ch)
+
+    if json_mode:
+        import json
+
+        print(json.dumps({
+            "dry_run": True,
+            "new": new,
+            "update": update,
+            "read_date": read_date,
+        }))
+        return
+
+    if new:
+        console.print(f"New:    {', '.join(new)}")
+    if update:
+        console.print(f"Update: {', '.join(update)}")
+    if not new and not update:
+        console.print("[dim]Nothing to do[/]")
+    else:
+        console.print(f"[dim]Would log {len(chapters)} "
+                      f"chapter(s) on {read_date}.[/]")
