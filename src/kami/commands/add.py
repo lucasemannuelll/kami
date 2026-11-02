@@ -1,33 +1,40 @@
 from __future__ import annotations
-import typer 
+
 import sqlite3
+from pathlib import Path
+
+import typer
+
 from kami.config import resolve_db_path
-from kami.db import connect
 from kami.dates import DateParseError, parse_date
+from kami.db import connect
 from kami.formatting import console, emit
 from kami.repo import add_series
-from pathlib import Path
 
 TYPE_CHOICES: list[str] = ["Manga", "Manhwa", "Manhua", "Novel", "Webtoon", "Comic"]
 STATUS_CHOICES: list[str] = ["Reading", "Completed", "On Hold", "Dropped"]
 
+
 def register(app: typer.Typer) -> None:
     @app.command("add")
     def add_cmd(
-            ctx: typer.Context,
-            title: str = typer.Argument(..., help="Series title"),
-            series_type: str = typer.Option(
-                ..., "--type", "-t",
-                help="Medium: Manga, Manhwa, Manhua, Novel, Webtoon",
-            ),
-            author: str | None = typer.Option(None, "--author", "-a"),
-            status: str = typer.Option("Reading", "--status", "-s"),
-            tags: list[str] = typer.Option([], "--tag", help="Repeatable"),
-            started_at: str | None = typer.Option(
-                None, "--started",
-                help="YYYY-MM-DD, or 'pre-catalog'",
-            ),
-        ) -> None:
+        ctx: typer.Context,
+        title: str = typer.Argument(..., help="Series title"),
+        series_type: str = typer.Option(
+            ...,
+            "--type",
+            "-t",
+            help="Medium: Manga, Manhwa, Manhua, Novel, Webtoon",
+        ),
+        author: str | None = typer.Option(None, "--author", "-a"),
+        status: str = typer.Option("Reading", "--status", "-s"),
+        tags: list[str] = typer.Option([], "--tag", help="Repeatable"),
+        started_at: str | None = typer.Option(
+            None,
+            "--started",
+            help="YYYY-MM-DD, or 'pre-catalog'",
+        ),
+    ) -> None:
         _validate_choice(series_type, TYPE_CHOICES, "--type")
         _validate_choice(status, STATUS_CHOICES, "--status")
 
@@ -41,17 +48,38 @@ def register(app: typer.Typer) -> None:
 
         with connect(db_path) as conn:
             try:
-                new_id = add_series(conn, title=title, series_type=series_type, author=author, status=status, started_at=started_at, tags=tags)
+                new_id = add_series(
+                    conn,
+                    title=title,
+                    series_type=series_type,
+                    author=author,
+                    status=status,
+                    started_at=started_at,
+                    tags=tags,
+                )
             except sqlite3.InternalError:
-                console.print(f"[red]error:[/] series {title!r} [{series_type}] already exists")
+                console.print(
+                    f"[red]error:[/] series {title!r} [{series_type}] already exists"
+                )
                 raise typer.Exit(code=1) from None
 
-        emit(f"Added {title!r} [{series_type}] as {status}",
-             json_mode=ctx.obj["json"],
-             log_result={"id": new_id, "series_type": series_type, "status": status, "author": author, "tags": tags, "started_at": started_at},
-
+        emit(
+            f"Added {title!r} [{series_type}] as {status}",
+            json_mode=ctx.obj["json"],
+            log_result={
+                "id": new_id,
+                "series_type": series_type,
+                "status": status,
+                "author": author,
+                "tags": tags,
+                "started_at": started_at,
+            },
         )
+
 
 def _validate_choice(value: str, choices: list[str], flag: str) -> None:
     if value not in choices:
-        raise typer.BadParameter(f"invalid value {value!r}; choose from {', '.join(choices)}", param_hint=flag)
+        raise typer.BadParameter(
+            f"invalid value {value!r}; choose from {', '.join(choices)}",
+            param_hint=flag,
+        )

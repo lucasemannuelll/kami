@@ -4,9 +4,23 @@ PRAGMA journal_mode = WAL;
 CREATE TABLE IF NOT EXISTS series (
     id INTEGER PRIMARY KEY,
     title TEXT NOT NULL,
-    series_type TEXT NOT NULL CHECK (series_type IN ('Manga', 'Manhwa', 'Manhua', 'Novel', 'Webtoon', 'Comic')),
+    series_type TEXT NOT NULL 
+        CHECK (series_type IN (
+                'Manga', 
+                'Manhwa', 
+                'Manhua', 
+                'Novel', 
+                'Webtoon', 
+                'Comic')
+        ),
     author TEXT,
-    status TEXT NOT NULL DEFAULT 'Reading' CHECK (status IN ('Reading', 'Completed', 'On Hold', 'Dropped')),
+    status TEXT NOT NULL DEFAULT 'Reading' 
+        CHECK (status IN (
+                'Reading', 
+                'Completed', 
+                'On Hold', 
+                'Dropped')
+        ),
     started_at TEXT,
     
     UNIQUE (title, series_type)
@@ -14,9 +28,7 @@ CREATE TABLE IF NOT EXISTS series (
 
 CREATE TABLE IF NOT EXISTS tags (
     id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL UNIQUE,
-
-    COLLATE NOCASE (name)
+    name TEXT NOT NULL UNIQUE COLLATE NOCASE
 );
 
 CREATE TABLE IF NOT EXISTS series_tags (
