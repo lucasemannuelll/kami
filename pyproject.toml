@@ -1,7 +1,7 @@
 [project]
 name = "kami"
 version = "0.1.0"
-description = "A minimal reading ledger"
+description = "kami — a minimal reading ledger for manga, manhwa, manhua, web novels, comics and etc..."
 readme = "README.md"
 requires-python = ">=3.10"
 keywords = ["manga", "tracker", "reading", "cli", "sqlite"]
@@ -24,3 +24,6 @@ include = [
     "README.md",
     "pyproject.toml",
 ]
+
+[project.scripts]
+kami = "kami.cli:main"
