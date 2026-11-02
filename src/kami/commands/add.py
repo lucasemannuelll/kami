@@ -11,8 +11,20 @@ from kami.db import connect
 from kami.formatting import console, emit
 from kami.repo import add_series
 
-TYPE_CHOICES: list[str] = ["Manga", "Manhwa", "Manhua", "Novel", "Webtoon", "Comic"]
-STATUS_CHOICES: list[str] = ["Reading", "Completed", "On Hold", "Dropped"]
+TYPE_CHOICES: list[str] = [
+    "Manga",
+    "Manhwa",
+    "Manhua",
+    "Novel",
+    "Webtoon",
+    "Comic",
+]
+STATUS_CHOICES: list[str] = [
+    "Reading",
+    "Completed",
+    "On Hold",
+    "Dropped",
+]
 
 
 def register(app: typer.Typer) -> None:
@@ -59,7 +71,8 @@ def register(app: typer.Typer) -> None:
                 )
             except sqlite3.InternalError:
                 console.print(
-                    f"[red]error:[/] series {title!r} [{series_type}] already exists"
+                    f"[red]error:[/] series {title!r} - "
+                    f"[{series_type}] already exists"
                 )
                 raise typer.Exit(code=1) from None
 
@@ -77,7 +90,11 @@ def register(app: typer.Typer) -> None:
         )
 
 
-def _validate_choice(value: str, choices: list[str], flag: str) -> None:
+def _validate_choice(
+    value: str,
+    choices: list[str],
+    flag: str,
+) -> None:
     if value not in choices:
         raise typer.BadParameter(
             f"invalid value {value!r}; choose from {', '.join(choices)}",
