@@ -12,6 +12,26 @@ from kami.formatting import console, emit, resolve_or_exit
 from kami.repo import add_tag_to_series, remove_tag_from_series, update_series
 
 
+def _summarize(updated_fields: dict[str, object]) -> str:
+    summary_parts: list[str] = []
+
+    for field_name in ("title", "status", "author"):
+        if field_name in updated_fields:
+            summary_parts.append(
+                f"{field_name}={updated_fields[field_name]}"
+            )
+    if "tags_added" in updated_fields:
+        summary_parts.append(
+            f"+{','.join(updated_fields['tags_added'])}"
+        )
+    if "tags_removed" in updated_fields:
+        summary_parts.append(
+            f"-{','.join(updated_fields['tags_removed'])}"
+        )
+
+    return " ".join(summary_parts)
+
+
 def register(app: typer.Typer) -> None:
     @app.command("edit")
     def edit_cmd(
@@ -88,23 +108,3 @@ def register(app: typer.Typer) -> None:
             json_mode=ctx.obj["json"],
             log_result={"id": series_id, **updated_fields},
         )
-
-
-def _summarize(updated_fields: dict[str, object]) -> str:
-    summary_parts: list[str] = []
-
-    for field_name in ("title", "status", "author"):
-        if field_name in updated_fields:
-            summary_parts.append(
-                f"{field_name}={updated_fields[field_name]}"
-            )
-    if "tags_added" in updated_fields:
-        summary_parts.append(
-            f"+{','.join(updated_fields['tags_added'])}"
-        )
-    if "tags_removed" in updated_fields:
-        summary_parts.append(
-            f"-{','.join(updated_fields['tags_removed'])}"
-        )
-
-    return " ".join(summary_parts)

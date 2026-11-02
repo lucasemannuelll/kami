@@ -27,6 +27,18 @@ STATUS_CHOICES: list[str] = [
 ]
 
 
+def _validate_choice(
+    value: str,
+    choices: list[str],
+    flag: str,
+) -> None:
+    if value not in choices:
+        raise typer.BadParameter(
+            f"invalid value {value!r}; choose from {', '.join(choices)}",
+            param_hint=flag,
+        )
+
+
 def register(app: typer.Typer) -> None:
     @app.command("add")
     def add_cmd(
@@ -87,16 +99,4 @@ def register(app: typer.Typer) -> None:
                 "tags": tags,
                 "started_at": started_at,
             },
-        )
-
-
-def _validate_choice(
-    value: str,
-    choices: list[str],
-    flag: str,
-) -> None:
-    if value not in choices:
-        raise typer.BadParameter(
-            f"invalid value {value!r}; choose from {', '.join(choices)}",
-            param_hint=flag,
         )

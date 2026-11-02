@@ -11,6 +11,31 @@ from kami.formatting import console, emit, resolve_or_exit
 from kami.repo import delete_series, get_series_detail
 
 
+def _confirm_or_exit(detail: object, *, json_mode: bool) -> None:
+    from kami.models import SeriesDetail
+
+    assert isinstance(detail, SeriesDetail)
+
+    chapter_count: int = detail.chapters_read
+    chapter_word: str = "chapter" if chapter_count == 1 else "chapters"
+
+    if not sys.stdin.isatty():
+        console.print(
+            f"[red]error:[/red] refusing to delete {detail.series.title!r} "
+            f"({chapter_count} {chapter_word}) "
+            "without --yes in non-interactive context"
+        )
+        raise typer.Exit(code=10)
+    console.print(
+        f"Delete [bold]{detail.series.title}[/bold] and "
+        f"{chapter_count} logged {chapter_word}? This cannot be undone."
+    )
+
+    confirmed: bool = typer.confirm("Continue?", default=False)
+    if not confirmed:
+        raise typer.Exit(code=10)
+
+
 def register(app: typer.Typer) -> None:
     @app.command("rm")
     def rm_cmd(
@@ -47,28 +72,3 @@ def register(app: typer.Typer) -> None:
                 "chapters_deleted": detail.chapters_read,
             },
         )
-
-
-def _confirm_or_exit(detail: object, *, json_mode: bool) -> None:
-    from kami.models import SeriesDetail
-
-    assert isinstance(detail, SeriesDetail)
-
-    chapter_count: int = detail.chapters_read
-    chapter_word: str = "chapter" if chapter_count == 1 else "chapters"
-
-    if not sys.stdin.isatty():
-        console.print(
-            f"[red]error:[/red] refusing to delete {detail.series.title!r} "
-            f"({chapter_count} {chapter_word}) "
-            "without --yes in non-interactive context"
-        )
-        raise typer.Exit(code=10)
-    console.print(
-        f"Delete [bold]{detail.series.title}[/bold] and "
-        f"{chapter_count} logged {chapter_word}? This cannot be undone."
-    )
-
-    confirmed: bool = typer.confirm("Continue?", default=False)
-    if not confirmed:
-        raise typer.Exit(code=10)

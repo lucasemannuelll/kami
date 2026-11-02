@@ -5,6 +5,40 @@ import sqlite3
 from kami.models import Chapter, Series, SeriesDetail, SeriesSummary
 
 
+def _set_tags(
+    conn: sqlite3.Connection,
+    series_id: int,
+    tags: list[str]
+) -> None:
+    for tag in tags:
+        add_tag_to_series(conn, series_id, tag)
+
+
+def _ensure_tag(conn: sqlite3.Connection, name: str) -> int:
+    cursor = conn.cursor()
+
+    cursor.execute("INSERT OR IGNORE INTO tags (name) VALUES (?)", (name,))
+    tag_record = cursor.execute(
+        "SELECT id FROM tags WHERE name = ? COLLATE NOCASE", (name,)
+    ).fetchone()
+
+    assert tag_record is not None
+    return int(tag_record["id"])
+
+
+def _tags_for(conn: sqlite3.Connection, series_id: int) -> tuple[str, ...]:
+    cursor = conn.cursor()
+    tag_records = cursor.execute(
+        "SELECT t.name FROM tags t "
+        "JOIN series_tags st ON st.tag_id = t.id "
+        "WHERE st.series_id = ? "
+        "ORDER BY t.name COLLATE NOCASE",
+        (series_id,),
+    ).fetchall()
+
+    return tuple(tag_record["name"] for tag_record in tag_records)
+
+
 def add_series(
     conn: sqlite3.Connection,
     *,
@@ -133,25 +167,6 @@ def unlog_chapters(
         [(series_id, chapter) for chapter in chapters],
     )
     return cursor.rowcount
-
-
-def _set_tags(
-    conn: sqlite3.Connection, series_id: int, tags: list[str]
-) -> None:
-    for tag in tags:
-        add_tag_to_series(conn, series_id, tag)
-
-
-def _ensure_tag(conn: sqlite3.Connection, name: str) -> int:
-    cursor = conn.cursor()
-
-    cursor.execute("INSERT OR IGNORE INTO tags (name) VALUES (?)", (name,))
-    tag_record = cursor.execute(
-        "SELECT id FROM tags WHERE name = ? COLLATE NOCASE", (name,)
-    ).fetchone()
-
-    assert tag_record is not None
-    return int(tag_record["id"])
 
 
 def get_series(conn: sqlite3.Connection, series_id: int) -> Series | None:
@@ -296,16 +311,3 @@ def chapter_exists(
     if chapter_record is None:
         return (False, None)
     return (True, chapter_record["read_date"])
-
-
-def _tags_for(conn: sqlite3.Connection, series_id: int) -> tuple[str, ...]:
-    cursor = conn.cursor()
-    tag_records = cursor.execute(
-        "SELECT t.name FROM tags t "
-        "JOIN series_tags st ON st.tag_id = t.id "
-        "WHERE st.series_id = ? "
-        "ORDER BY t.name COLLATE NOCASE",
-        (series_id,),
-    ).fetchall()
-
-    return tuple(tag_record["name"] for tag_record in tag_records)

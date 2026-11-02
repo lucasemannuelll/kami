@@ -30,6 +30,25 @@ class NotFound:
 Resolution = Resolved | Ambiguous | NotFound
 
 
+def _fetch(
+    conn: sqlite3.Connection, sql_query: str, params: tuple
+) -> list[SeriesRow]:
+    series_records = conn.execute(sql_query, params).fetchall()
+
+    return [
+        SeriesRow(
+            id=series_record["id"],
+            title=series_record["title"],
+            series_type=series_record["type"],
+        )
+        for series_record in series_records
+    ]
+
+
+def _escape_like(text: str) -> str:
+    return text.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
 def resolve_series(conn: sqlite3.Connection, search_query: str) -> Resolution:
     if not search_query or not search_query.strip():
         return NotFound(query="")
@@ -59,22 +78,3 @@ def resolve_series(conn: sqlite3.Connection, search_query: str) -> Resolution:
         return Ambiguous(query=cleaned_query, candidates=prefix_matches)
 
     return NotFound(query=cleaned_query)
-
-
-def _fetch(
-    conn: sqlite3.Connection, sql_query: str, params: tuple
-) -> list[SeriesRow]:
-    series_records = conn.execute(sql_query, params).fetchall()
-
-    return [
-        SeriesRow(
-            id=series_record["id"],
-            title=series_record["title"],
-            series_type=series_record["type"],
-        )
-        for series_record in series_records
-    ]
-
-
-def _escape_like(text: str) -> str:
-    return text.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")

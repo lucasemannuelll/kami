@@ -14,38 +14,10 @@ class ChapterSpecError(ValueError):
     """Raised when a chapter spec cannot be parsed."""
 
 
-def parse_chapter_spec(chapter_spec: str) -> list[str]:
-    if not chapter_spec or not chapter_spec.strip():
-        raise ChapterSpecError("empty chapter spec")
-
-    unique_chapters: list[str] = []
-    seen_chapters: set[str] = set()
-
-    for raw_item in chapter_spec.split(","):
-        item_spec: str = raw_item.strip()
-        if not item_spec:
-            raise ChapterSpecError(f"empty item in spec: {chapter_spec!r}")
-
-        for chapter in _expand_item(item_spec):
-            if chapter not in seen_chapters:
-                seen_chapters.add(chapter)
-                unique_chapters.append(chapter)
-
-    return unique_chapters
-
-
-def _expand_item(item_spec: str) -> list[str]:
-    range_match: re.Match[str] | None = _RANGE_RE.match(item_spec)
-    if not range_match:
-        return [item_spec]
-
-    start_str: str = range_match.group(1)
-    end_str: str = range_match.group(2)
-
-    if not (_INT_OR_DEC_RE.match(start_str) and _INT_OR_DEC_RE.match(end_str)):
-        raise ChapterSpecError(f"must be numeric: {item_spec!r}")
-
-    return _expand_range(start_str, end_str)
+def _format_decimal(decimal_value: Decimal) -> str:
+    if decimal_value == decimal_value.to_integral_value():
+        return str(int(decimal_value))
+    return format(decimal_value.normalize(), "f")
 
 
 def _expand_range(start_str: str, end_str: str) -> list[str]:
@@ -74,11 +46,38 @@ def _expand_range(start_str: str, end_str: str) -> list[str]:
     return expanded_range
 
 
-def _format_decimal(decimal_value: Decimal) -> str:
-    if decimal_value == decimal_value.to_integral_value():
-        return str(int(decimal_value))
+def _expand_item(item_spec: str) -> list[str]:
+    range_match: re.Match[str] | None = _RANGE_RE.match(item_spec)
+    if not range_match:
+        return [item_spec]
 
-    return format(decimal_value.normalize(), "f")
+    start_str: str = range_match.group(1)
+    end_str: str = range_match.group(2)
+
+    if not (_INT_OR_DEC_RE.match(start_str) and _INT_OR_DEC_RE.match(end_str)):
+        raise ChapterSpecError(f"must be numeric: {item_spec!r}")
+
+    return _expand_range(start_str, end_str)
+
+
+def parse_chapter_spec(chapter_spec: str) -> list[str]:
+    if not chapter_spec or not chapter_spec.strip():
+        raise ChapterSpecError("empty chapter spec")
+
+    unique_chapters: list[str] = []
+    seen_chapters: set[str] = set()
+
+    for raw_item in chapter_spec.split(","):
+        item_spec: str = raw_item.strip()
+        if not item_spec:
+            raise ChapterSpecError(f"empty item in spec: {chapter_spec!r}")
+
+        for chapter in _expand_item(item_spec):
+            if chapter not in seen_chapters:
+                seen_chapters.add(chapter)
+                unique_chapters.append(chapter)
+
+    return unique_chapters
 
 
 def sort_key(chapter: str) -> tuple[int, float, str]:

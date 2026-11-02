@@ -19,6 +19,38 @@ class ResolveExit(Exception):
         self.code = code
 
 
+def _summary_to_dict(summary: SeriesSummary) -> dict[str, Any]:
+    return {
+        "id": summary.id,
+        "title": summary.title,
+        "type": summary.series_type,
+        "status": summary.status,
+        "author": summary.author,
+        "tags": list(summary.tags),
+        "chapters_read": summary.chapters_read,
+        "last_read": summary.last_read,
+    }
+
+
+def _detail_to_dict(detail: SeriesDetail) -> dict[str, Any]:
+    series = detail.series
+
+    return {
+        "id": series.id,
+        "title": series.title,
+        "type": series.series_type,
+        "status": series.status,
+        "author": series.author,
+        "started_at": series.started_at,
+        "tags": list(series.tags),
+        "chapters_read": detail.chapters_read,
+        "last_chapters": [
+            {"chapter": chapter.chapter, "read_date": chapter.read_date}
+            for chapter in detail.last_chapters
+        ],
+    }
+
+
 def emit(text: str, *, json_mode: bool, log_result: dict[str, Any]) -> None:
     if json_mode:
         typer_echo(json.dumps(log_result))
@@ -66,19 +98,6 @@ def render_list(summaries: list[SeriesSummary], *, json_mode: bool) -> None:
     console.print(table)
 
 
-def _summary_to_dict(summary: SeriesSummary) -> dict[str, Any]:
-    return {
-        "id": summary.id,
-        "title": summary.title,
-        "type": summary.series_type,
-        "status": summary.status,
-        "author": summary.author,
-        "tags": list(summary.tags),
-        "chapters_read": summary.chapters_read,
-        "last_read": summary.last_read,
-    }
-
-
 def render_show(detail: SeriesDetail, *, json_mode: bool) -> None:
     if json_mode:
         print(json.dumps(_detail_to_dict(detail)))
@@ -105,25 +124,6 @@ def render_show(detail: SeriesDetail, *, json_mode: bool) -> None:
         console.print(
             f"    • {chapter.chapter} - {human_date(chapter.read_date)}"
         )
-
-
-def _detail_to_dict(detail: SeriesDetail) -> dict[str, Any]:
-    series = detail.series
-
-    return {
-        "id": series.id,
-        "title": series.title,
-        "type": series.series_type,
-        "status": series.status,
-        "author": series.author,
-        "started_at": series.started_at,
-        "tags": list(series.tags),
-        "chapters_read": detail.chapters_read,
-        "last_chapters": [
-            {"chapter": chapter.chapter, "read_date": chapter.read_date}
-            for chapter in detail.last_chapters
-        ],
-    }
 
 
 def render_log_results(
