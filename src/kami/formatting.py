@@ -81,7 +81,7 @@ def _summary_to_dict(summary: SeriesSummary) -> dict[str, Any]:
 
 def render_show(detail: SeriesDetail, *, json_mode: bool) -> None:
     if json_mode:
-        print(json_mode.dumps(_detail_to_dict(detail)))
+        print(json.dumps(_detail_to_dict(detail)))
         return
 
     series = detail.series
