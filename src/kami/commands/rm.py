@@ -8,7 +8,7 @@ import typer
 from kami.config import resolve_db_path
 from kami.db import connect
 from kami.formatting import console, emit, resolve_or_exit
-from kami.repo import remove_series, get_series_detail
+from kami.repo import get_series_detail, remove_series
 
 
 def _confirm_or_exit(detail: object, *, json_mode: bool) -> None:
@@ -40,12 +40,8 @@ def register(app: typer.Typer) -> None:
     @app.command("rm", help="Delete a series and its chapters.")
     def rm_cmd(
         ctx: typer.Context,
-        query: str = typer.Argument(
-            ..., help="Series title (or unique prefix)"
-        ),
-        yes: bool = typer.Option(
-            False, "--yes", "-y", help="Skip confirmation"
-        ),
+        query: str = typer.Argument(..., help="Series title (or unique prefix)"),
+        yes: bool = typer.Option(False, "--yes", "-y", help="Skip confirmation"),
     ) -> None:
         """Remove a series (and cascade its chapters/tags links). Prompts unless --yes."""
         db_path: Path = resolve_db_path(ctx.obj["db"])

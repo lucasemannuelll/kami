@@ -8,7 +8,6 @@ import typer
 from kami.db import KamiError
 from kami.formatting import ResolveExit, error_console
 
-
 app = typer.Typer(
     name="kami",
     help="A minimal reading ledger for manga, manhwa, manhua, and web novels.",
@@ -26,11 +25,14 @@ def root(
         help="Path to the SQLite database (overrides $KAMI_DB)",
     ),
     json_mode: bool = typer.Option(
-        False, "--json", help="Output machine-readable JSON.",
+        False,
+        "--json",
+        help="Output machine-readable JSON.",
     ),
     verbose: bool = typer.Option(
         False,
-        "--verbose", "-v",
+        "--verbose",
+        "-v",
         help="Print debug info (SQL, exec commands)",
     ),
 ) -> None:
@@ -42,7 +44,8 @@ def root(
 
 
 def _register_commands() -> None:
-    from kami.commands import add, db, edit, init, list as list_mod, log, rm, show, unlog
+    from kami.commands import add, db, edit, init, log, rm, show, unlog
+    from kami.commands import list as list_mod
 
     init.register(app)
     add.register(app)

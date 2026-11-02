@@ -10,7 +10,6 @@ from kami.db import connect
 from kami.formatting import console, render_unlog_result, resolve_or_exit
 from kami.repo import chapter_exists, unlog_chapters
 
-
 _CONFIRM_THRESHOLD = 10
 
 
@@ -32,17 +31,21 @@ def _report_dry_run(
 ) -> None:
     if json_mode:
         import json
-        print(json.dumps({
-            "dry_run": True,
-            "chapters": chapters,
-            "delete": delete,
-        }))
+
+        print(
+            json.dumps(
+                {
+                    "dry_run": True,
+                    "chapters": chapters,
+                    "delete": delete,
+                }
+            )
+        )
         return
 
     action_description: str = "delete" if delete else "clear read date on"
     console.print(
-        f"Would {action_description} {len(chapters)} "
-        f"chapter(s): {', '.join(chapters)}"
+        f"Would {action_description} {len(chapters)} chapter(s): {', '.join(chapters)}"
     )
 
 
@@ -79,7 +82,8 @@ def register(app: typer.Typer) -> None:
         ),
         yes: bool = typer.Option(
             False,
-            "--yes", "-y",
+            "--yes",
+            "-y",
             help="Skip confirmation",
         ),
         dry_run: bool = typer.Option(
@@ -119,5 +123,5 @@ def register(app: typer.Typer) -> None:
             chapters=matched,
             delete=delete,
             json_mode=ctx.obj["json"],
-            dry_run=False
+            dry_run=False,
         )

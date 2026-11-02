@@ -24,11 +24,16 @@ def register(app: typer.Typer) -> None:
 
         if ctx.obj["json"]:
             import json
-            print(json.dumps({
-                "path": str(db_path),
-                "exists": exists,
-                "size": db_path.stat().st_size if exists else None,
-            }))
+
+            print(
+                json.dumps(
+                    {
+                        "path": str(db_path),
+                        "exists": exists,
+                        "size": db_path.stat().st_size if exists else None,
+                    }
+                )
+            )
         else:
             print(str(db_path))
 

@@ -17,17 +17,11 @@ def _summarize(updated_fields: dict[str, object]) -> str:
 
     for field_name in ("title", "status", "author"):
         if field_name in updated_fields:
-            summary_parts.append(
-                f"{field_name}={updated_fields[field_name]}"
-            )
+            summary_parts.append(f"{field_name}={updated_fields[field_name]}")
     if "tags_added" in updated_fields:
-        summary_parts.append(
-            f"+{','.join(updated_fields['tags_added'])}"
-        )
+        summary_parts.append(f"+{','.join(updated_fields['tags_added'])}")
     if "tags_removed" in updated_fields:
-        summary_parts.append(
-            f"-{','.join(updated_fields['tags_removed'])}"
-        )
+        summary_parts.append(f"-{','.join(updated_fields['tags_removed'])}")
 
     return " ".join(summary_parts)
 
@@ -36,9 +30,7 @@ def register(app: typer.Typer) -> None:
     @app.command("edit", help="Edit a series' metadata or tags.")
     def edit_cmd(
         ctx: typer.Context,
-        query: str = typer.Argument(
-            ..., help="Series title (or unique prefix)"
-        ),
+        query: str = typer.Argument(..., help="Series title (or unique prefix)"),
         new_title: str | None = typer.Option(None, "--title"),
         status: str | None = typer.Option(None, "--status", "-s"),
         author: str | None = typer.Option(None, "--author", "-a"),
@@ -48,8 +40,7 @@ def register(app: typer.Typer) -> None:
         """Rename, change status/author, or add/remove tags on a resolved series."""
         if status is not None and status not in STATUS_CHOICES:
             raise typer.BadParameter(
-                f"invalid status {status!r}; "
-                f"choose from {', '.join(STATUS_CHOICES)}",
+                f"invalid status {status!r}; choose from {', '.join(STATUS_CHOICES)}",
                 param_hint="--status",
             )
 
@@ -58,10 +49,10 @@ def register(app: typer.Typer) -> None:
 
         with connect(db_path) as conn:
             series_id = resolve_or_exit(
-                            conn,
-                            query,
-                            json_mode=ctx.obj["json"],
-                        )
+                conn,
+                query,
+                json_mode=ctx.obj["json"],
+            )
 
             try:
                 update_series(

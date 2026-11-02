@@ -17,21 +17,17 @@ def register(app: typer.Typer) -> None:
         ctx: typer.Context,
         status: str | None = typer.Option(None, "--status", "-s"),
         series_type: str | None = typer.Option(None, "--type", "-t"),
-        tags: list[str] = typer.Option(
-            [], "--tag", help="repeatable; AND semantics"
-        ),
+        tags: list[str] = typer.Option([], "--tag", help="repeatable; AND semantics"),
     ) -> None:
         """Show all series. Filters: --status, --type, repeatable --tag (AND)."""
         if status is not None and status not in STATUS_CHOICES:
             raise typer.BadParameter(
-                f"invalid status {status!r}; "
-                f"choose from {', '.join(STATUS_CHOICES)}",
+                f"invalid status {status!r}; choose from {', '.join(STATUS_CHOICES)}",
                 param_hint="--status",
             )
         if series_type is not None and series_type not in TYPE_CHOICES:
             raise typer.BadParameter(
-                f"invalid type {series_type!r}; "
-                f"choose from {', '.join(TYPE_CHOICES)}",
+                f"invalid type {series_type!r}; choose from {', '.join(TYPE_CHOICES)}",
                 param_hint="--type",
             )
 
