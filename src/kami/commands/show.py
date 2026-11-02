@@ -11,13 +11,14 @@ from kami.repo import get_series_detail
 
 
 def register(app: typer.Typer) -> None:
-    @app.command("show")
+    @app.command("show", help="Show details for one series.")
     def show_cmd(
         ctx: typer.Context,
         query: str = typer.Argument(
             ..., help="Series title (or unique prefix)"
         ),
     ) -> None:
+        """Print a series' metadata and its 3 most recent chapters."""
         db_path: Path = resolve_db_path(ctx.obj["db"])
         with connect(db_path) as conn:
             series_id = resolve_or_exit(conn, query, json_mode=ctx.obj["json"])

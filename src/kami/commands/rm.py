@@ -37,7 +37,7 @@ def _confirm_or_exit(detail: object, *, json_mode: bool) -> None:
 
 
 def register(app: typer.Typer) -> None:
-    @app.command("rm")
+    @app.command("rm", help="Delete a series and its chapters.")
     def rm_cmd(
         ctx: typer.Context,
         query: str = typer.Argument(
@@ -47,6 +47,7 @@ def register(app: typer.Typer) -> None:
             False, "--yes", "-y", help="Skip confirmation"
         ),
     ) -> None:
+        """Remove a series (and cascade its chapters/tags links). Prompts unless --yes."""
         db_path: Path = resolve_db_path(ctx.obj["db"])
         with connect(db_path) as conn:
             series_id: int | None = resolve_or_exit(

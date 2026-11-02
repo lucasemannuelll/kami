@@ -14,10 +14,11 @@ def register(app: typer.Typer) -> None:
         help="Database maintenance and introspection.", no_args_is_help=True
     )
 
-    app.add_typer(db_app, "db")
+    app.add_typer(db_app, name="db")
 
-    @db_app.command("path")
+    @db_app.command("path", help="Print the resolved database path.")
     def db_path_cmd(ctx: typer.Context) -> None:
+        """Show the resolved DB path (CLI --db → $KAMI_DB → platformdirs)."""
         db_path = resolve_db_path(ctx.obj["db"])
         exists = db_path.exists()
 
@@ -31,8 +32,9 @@ def register(app: typer.Typer) -> None:
         else:
             print(str(db_path))
 
-    @db_app.command("shell")
+    @db_app.command("shell", help="Open an interactive sqlite3 shell on the DB.")
     def db_shell_cmd(ctx: typer.Context) -> None:
+        """Run sqlite3 with .headers on / .mode box; extra args go before the DB path."""
         db_path = resolve_db_path(ctx.obj["db"])
 
         if not db_path.exists():

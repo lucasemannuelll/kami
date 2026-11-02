@@ -12,7 +12,7 @@ from kami.repo import list_series
 
 
 def register(app: typer.Typer) -> None:
-    @app.command("list")
+    @app.command("list", help="List series, optionally filtered.")
     def list_cmd(
         ctx: typer.Context,
         status: str | None = typer.Option(None, "--status", "-s"),
@@ -21,6 +21,7 @@ def register(app: typer.Typer) -> None:
             [], "--tag", help="repeatable; AND semantics"
         ),
     ) -> None:
+        """Show all series. Filters: --status, --type, repeatable --tag (AND)."""
         if status is not None and status not in STATUS_CHOICES:
             raise typer.BadParameter(
                 f"invalid status {status!r}; "

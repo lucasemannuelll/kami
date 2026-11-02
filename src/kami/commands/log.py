@@ -63,7 +63,7 @@ def _parse_spec(chapter_spec: str) -> list[str]:
 
 
 def register(app: typer.Typer) -> None:
-    @app.command("log")
+    @app.command("log", help="Record chapters as read.")
     def log_cmd(
         ctx: typer.Context,
         query: str = typer.Argument(
@@ -80,6 +80,7 @@ def register(app: typer.Typer) -> None:
             False, "--dry-run", help="Show what would change"
         ),
     ) -> None:
+        """Log chapters (e.g. '218-225', '12.1,12.2,13') on a date (default: today)."""
         read_date = _resolve_date(date)
         chapters = _parse_spec(spec)
 

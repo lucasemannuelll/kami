@@ -64,7 +64,7 @@ def _confirm_or_exit(chapter_count: int) -> None:
 
 
 def register(app: typer.Typer) -> None:
-    @app.command("unlog")
+    @app.command("unlog", help="Clear read dates or delete chapter rows.")
     def unlog_cmd(
         ctx: typer.Context,
         query: str = typer.Argument(
@@ -88,6 +88,7 @@ def register(app: typer.Typer) -> None:
             help="Show what would change",
         ),
     ) -> None:
+        """Without --delete: set read_date=NULL. With --delete: remove rows (prompts at >=10)."""
         chapters = _parse_spec(spec)
 
         db_path = resolve_db_path(ctx.obj["db"])

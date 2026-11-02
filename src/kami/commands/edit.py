@@ -33,7 +33,7 @@ def _summarize(updated_fields: dict[str, object]) -> str:
 
 
 def register(app: typer.Typer) -> None:
-    @app.command("edit")
+    @app.command("edit", help="Edit a series' metadata or tags.")
     def edit_cmd(
         ctx: typer.Context,
         query: str = typer.Argument(
@@ -45,6 +45,7 @@ def register(app: typer.Typer) -> None:
         add_tags: list[str] = typer.Option([], "--add-tags"),
         remove_tags: list[str] = typer.Option([], "--remove-tags"),
     ) -> None:
+        """Rename, change status/author, or add/remove tags on a resolved series."""
         if status is not None and status not in STATUS_CHOICES:
             raise typer.BadParameter(
                 f"invalid status {status!r}; "

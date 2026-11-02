@@ -8,8 +8,9 @@ from kami.formatting import emit
 
 
 def register(app: typer.Typer) -> None:
-    @app.command("init")
+    @app.command("init", help="Create the database and schema.")
     def init_cmd(ctx: typer.Context) -> None:
+        """Initialize the kami SQLite database (creates parent dirs)."""
         db_path: str = resolve_db_path(ctx.obj["db"])
         is_new_database: bool = init_schema(db_path)
 
