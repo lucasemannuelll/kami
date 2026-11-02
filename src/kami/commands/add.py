@@ -62,11 +62,11 @@ def register(app: typer.Typer) -> None:
         _validate_choice(series_type, TYPE_CHOICES, "--type")
         _validate_choice(status, STATUS_CHOICES, "--status")
 
-        if status is not None and started_at != "pre-catalog":
+        if started_at is not None and started_at != "pre-catalog":
             try:
                 parse_date(started_at)
             except DateParseError as e:
-                raise typer.BadParameter(str(e), param_hint="--started_at") from e
+                raise typer.BadParameter(str(e), param_hint="--started") from e
 
         db_path: Path = resolve_db_path(ctx.obj["db"])
 
@@ -81,7 +81,7 @@ def register(app: typer.Typer) -> None:
                     started_at=started_at,
                     tags=tags,
                 )
-            except sqlite3.InternalError:
+            except sqlite3.IntegrityError:
                 console.print(
                     f"[red]error:[/] series {title!r} - "
                     f"[{series_type}] already exists"

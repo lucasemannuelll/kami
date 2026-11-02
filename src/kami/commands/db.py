@@ -57,8 +57,8 @@ def register(app: typer.Typer) -> None:
             ".headers on",
             "-cmd",
             ".mode box",
-            str(db_path),
             *extra_args,
+            str(db_path),
         ]
 
         if ctx.obj["verbose"]:

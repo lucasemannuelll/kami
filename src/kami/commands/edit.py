@@ -42,8 +42,8 @@ def register(app: typer.Typer) -> None:
         new_title: str | None = typer.Option(None, "--title"),
         status: str | None = typer.Option(None, "--status", "-s"),
         author: str | None = typer.Option(None, "--author", "-a"),
-        add_tags: list[str] = typer.Option(None, "--add-tags"),
-        remove_tags: list[str] = typer.Option(None, "--remove-tags"),
+        add_tags: list[str] = typer.Option([], "--add-tags"),
+        remove_tags: list[str] = typer.Option([], "--remove-tags"),
     ) -> None:
         if status is not None and status not in STATUS_CHOICES:
             raise typer.BadParameter(
@@ -90,14 +90,14 @@ def register(app: typer.Typer) -> None:
             for tag in add_tags:
                 if add_tag_to_series(conn, series_id, tag):
                     added_tags.append(tag)
-            for tag in add_tags:
+            for tag in remove_tags:
                 if remove_tag_from_series(conn, series_id, tag):
                     removed_tags.append(tag)
 
         if added_tags:
             updated_fields["tags_added"] = added_tags
         if removed_tags:
-            updated_fields["tags_removed"] = added_tags
+            updated_fields["tags_removed"] = removed_tags
 
         if not updated_fields:
             console.print("[dim]No changes[/]")

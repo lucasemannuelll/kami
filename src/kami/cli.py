@@ -16,6 +16,7 @@ app = typer.Typer(
     add_completion=False,
 )
 
+
 @app.callback()
 def root(
     ctx: typer.Context,
@@ -23,7 +24,6 @@ def root(
         None,
         "--db",
         help="Path to the SQLite database (overrides $KAMI_DB)",
-        envvar=None,
     ),
     json_mode: bool = typer.Option(
         False, "--json", help="Output machine-readable JSON.",

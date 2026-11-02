@@ -28,7 +28,7 @@ def connect(db_path: Path) -> sqlite3.Connection:
     return conn
 
 
-def init_schema(db_path: str) -> bool:
+def init_schema(db_path: Path) -> bool:
     is_new_database: bool = not db_path.exists()
     ensure_parent_dir(db_path)
 

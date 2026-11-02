@@ -39,7 +39,7 @@ def _fetch(
         SeriesRow(
             id=series_record["id"],
             title=series_record["title"],
-            series_type=series_record["type"],
+            series_type=series_record["series_type"],
         )
         for series_record in series_records
     ]
@@ -57,7 +57,8 @@ def resolve_series(conn: sqlite3.Connection, search_query: str) -> Resolution:
 
     exact_matches: list[SeriesRow] = _fetch(
         conn,
-        "SELECT id, title, type FROM series WHERE title = ? COLLATE NOCASE",
+        "SELECT id, title, series_type "
+        "FROM series WHERE title = ? COLLATE NOCASE",
         (cleaned_query,),
     )
 
@@ -66,14 +67,14 @@ def resolve_series(conn: sqlite3.Connection, search_query: str) -> Resolution:
 
     prefix_matches = _fetch(
         conn,
-        "SELECT id, title, type FROM series "
+        "SELECT id, title, series_type FROM series "
         "WHERE title LIKE ? ESCAPE '\\' "
         "ORDER BY title",
         (_escape_like(cleaned_query) + "%",),
     )
 
     if len(prefix_matches) == 1:
-        return Resolution(series=prefix_matches[0])
+        return Resolved(series=prefix_matches[0])
     if len(prefix_matches) > 1:
         return Ambiguous(query=cleaned_query, candidates=prefix_matches)
 

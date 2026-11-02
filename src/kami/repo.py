@@ -91,7 +91,7 @@ def update_series(
     cursor = conn.cursor()
     cursor.execute(
         f"UPDATE series SET {', '.join(set_clauses)} WHERE id = ?",
-        (query_params,),
+        query_params,
     )
 
 
@@ -154,19 +154,32 @@ def unlog_chapters(
     delete: bool,
 ) -> int:
     cursor = conn.cursor()
+
+    if not chapters:
+        return 0
+
+    existing_chapter_count = 0
+
+    for chapter in chapters:
+        chapter_record = conn.execute(
+            "SELECT 1 FROM chapters WHERE series_id = ? AND chapter = ?",
+            (series_id, chapter),
+        ).fetchone()
+        if chapter_record is not None:
+            existing_chapter_count += 1
+
     if delete:
         cursor.executemany(
             "DELETE FROM chapters WHERE series_id = ? AND chapter = ?",
             [(series_id, chapter) for chapter in chapters],
         )
-        return cursor.rowcount
-
-    cursor.executemany(
-        "UPDATE chapters SET read_date = NULL "
-        "WHERE series_id = ? AND chapter = ?",
-        [(series_id, chapter) for chapter in chapters],
-    )
-    return cursor.rowcount
+    else:
+        cursor.executemany(
+            "UPDATE chapters SET read_date = NULL "
+            "WHERE series_id = ? AND chapter = ?",
+            [(series_id, chapter) for chapter in chapters],
+        )
+    return existing_chapter_count
 
 
 def get_series(conn: sqlite3.Connection, series_id: int) -> Series | None:
@@ -223,19 +236,19 @@ def list_series(
         query_params.extend(tags)
         query_params.append(len(tags))
 
-        where_clause = f"WHERE {' AND '.join(filters)}" if filters else ""
+    where_clause = f"WHERE {' AND '.join(filters)}" if filters else ""
 
-        sql_query = (
-            "SELECT "
-            "s.id, s.title, s.series_type, s.status, s.author, "
-            "(SELECT COUNT(*) FROM chapters c "
-            "WHERE c.series_id = s.id) AS chapters_read, "
-            "(SELECT MAX(c.read_date) FROM chapters c "
-            "WHERE c.series_id = s.id) AS last_read "
-            "FROM series s "
-            f"{where_clause} "
-            "ORDER BY s.title COLLATE NOCASE"
-        )
+    sql_query = (
+        "SELECT "
+        "s.id, s.title, s.series_type, s.status, s.author, "
+        "(SELECT COUNT(*) FROM chapters c "
+        "WHERE c.series_id = s.id) AS chapters_read, "
+        "(SELECT MAX(c.read_date) FROM chapters c "
+        "WHERE c.series_id = s.id) AS last_read "
+        "FROM series s "
+        f"{where_clause} "
+        "ORDER BY s.title COLLATE NOCASE"
+    )
 
     cursor = conn.cursor()
     series_records = cursor.execute(sql_query, query_params).fetchall()
@@ -244,7 +257,7 @@ def list_series(
         SeriesSummary(
             id=series_row["id"],
             title=series_row["title"],
-            type=series_row["type"],
+            series_type=series_row["series_type"],
             status=series_row["status"],
             author=series_row["author"],
             tags=_tags_for(conn, series_row["id"]),

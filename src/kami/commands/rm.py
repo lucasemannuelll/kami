@@ -8,7 +8,7 @@ import typer
 from kami.config import resolve_db_path
 from kami.db import connect
 from kami.formatting import console, emit, resolve_or_exit
-from kami.repo import delete_series, get_series_detail
+from kami.repo import remove_series, get_series_detail
 
 
 def _confirm_or_exit(detail: object, *, json_mode: bool) -> None:
@@ -21,7 +21,7 @@ def _confirm_or_exit(detail: object, *, json_mode: bool) -> None:
 
     if not sys.stdin.isatty():
         console.print(
-            f"[red]error:[/red] refusing to delete {detail.series.title!r} "
+            f"[red]error:[/] refusing to delete {detail.series.title!r} "
             f"({chapter_count} {chapter_word}) "
             "without --yes in non-interactive context"
         )
@@ -59,10 +59,10 @@ def register(app: typer.Typer) -> None:
             if not yes:
                 _confirm_or_exit(detail, json_mode=ctx.obj["json"])
 
-            delete_series(conn, series_id)
+            remove_series(conn, series_id)
 
         emit(
-            f"Deleted {detail.series.title!r} ",
+            f"Deleted {detail.series.title!r} "
             f"({detail.chapters_read} "
             f"chapter{'s' if detail.chapters_read != 1 else ''}).",
             json_mode=ctx.obj["json"],

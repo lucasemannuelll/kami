@@ -41,7 +41,7 @@ def _detail_to_dict(detail: SeriesDetail) -> dict[str, Any]:
         "type": series.series_type,
         "status": series.status,
         "author": series.author,
-        "started_at": series.started_at,
+        "started": series.started_at,
         "tags": list(series.tags),
         "chapters_read": detail.chapters_read,
         "last_chapters": [
@@ -152,6 +152,30 @@ def render_log_results(
     )
 
 
+def render_unlog_result(
+    *,
+    title: str,
+    chapters: list[str],
+    delete: bool,
+    json_mode: bool,
+    dry_run: bool,
+) -> None:
+    if json_mode:
+        print(json.dumps({
+            "series": title,
+            "chapters": chapters,
+            "delete": delete,
+            "dry_run": dry_run,
+        }))
+        return
+    action_prefix = "Deleted" if delete else "Cleared read date on"
+    chapter_word = "chapter" if len(chapters) == 1 else "chapters"
+    console.print(
+        f"{action_prefix} {len(chapters)} "
+        f"{chapter_word} for [bold]{title}[/]"
+    )
+
+
 def render_ambiguous(
     query: str, candidates: list[Any], *, json_mode: bool
 ) -> None:
@@ -200,13 +224,13 @@ def resolve_or_exit(conn: Any, query: str, *, json_mode: bool) -> int | None:
             resolution_result.candidates,
             json_mode=json_mode,
         )
-        return ResolveExit(2)
+        raise ResolveExit(2)
     if isinstance(resolution_result, NotFound):
         render_not_found(
             resolution_result.query,
             resolution_result.candidates,
             json_mode=json_mode,
         )
-        return ResolveExit(3)
+        raise ResolveExit(3)
 
     return resolution_result.series.id

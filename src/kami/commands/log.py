@@ -6,7 +6,7 @@ from kami.chapters import ChapterSpecError, parse_chapter_spec
 from kami.config import resolve_db_path
 from kami.dates import DateParseError, parse_date, today_iso
 from kami.db import connect
-from kami.formatting import console, render_log_result, resolve_or_exit
+from kami.formatting import console, render_log_results, resolve_or_exit
 from kami.repo import chapter_exists, log_chapters
 
 
@@ -46,7 +46,7 @@ def _report_dry_run(
                       f"chapter(s) on {read_date}.[/]")
 
 
-def _resolve_date(date_input: str | None) -> None:
+def _resolve_date(date_input: str | None) -> str:
     if date_input is None:
         return today_iso()
     try:
@@ -105,10 +105,9 @@ def register(app: typer.Typer) -> None:
                 series_id,
                 chapters,
                 read_date,
-                ctx.obj["json"],
             )
 
-        render_log_result(
+        render_log_results(
             title=query,
             chapters=chapters,
             read_date=read_date,
