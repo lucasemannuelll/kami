@@ -11,10 +11,15 @@ from kami.formatting import ResolveExit, error_console
 app = typer.Typer(
     name="kami",
     help="A minimal reading ledger for manga, manhwa, manhua, and web novels.",
-    version="0.1.0",
     no_args_is_help=True,
     add_completion=False,
 )
+
+
+def version_callback(value: bool) -> None:
+    if value:
+        typer.echo("kami 0.1.1")
+        raise typer.Exit()
 
 
 @app.callback()
@@ -35,6 +40,13 @@ def root(
         "--verbose",
         "-v",
         help="Print debug info (SQL, exec commands)",
+    ),
+    version: bool = typer.Option(
+        None,
+        "--version",
+        callback=version_callback,
+        is_eager=True,
+        help="Show the version and exit",
     ),
 ) -> None:
     ctx.obj = {
