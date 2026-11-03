@@ -67,11 +67,11 @@ kami show Frieren
 
 These apply to every command:
 
-| Option | Description |
-| --- | --- |
-| `--db PATH` | Path to the SQLite database (overrides `$KAMI_DB`) |
-| `--json` | Output machine-readable JSON |
-| `--verbose`, `-v` | Print debug info (SQL, exec commands) |
+| Option            | Description                                        |
+| ----------------- | -------------------------------------------------- |
+| `--db PATH`       | Path to the SQLite database (overrides `$KAMI_DB`) |
+| `--json`          | Output machine-readable JSON                       |
+| `--verbose`, `-v` | Print debug info (SQL, exec commands)              |
 
 ---
 
@@ -231,13 +231,13 @@ kami db shell
 
 The `SPEC` argument accepted by `log` and `unlog` supports:
 
-| Syntax | Meaning |
-| --- | --- |
-| `12` | Chapter 12 |
-| `12.1` | Chapter 12.1 (decimals) |
-| `12-20` | Chapters 12 through 20 (inclusive) |
-| `12.1-12.5` | Decimal range, step `0.1` |
-| `1-3,5,7.1,7.2` | Comma-separated combination |
+| Syntax          | Meaning                            |
+| --------------- | ---------------------------------- |
+| `12`            | Chapter 12                         |
+| `12.1`          | Chapter 12.1 (decimals)            |
+| `12-20`         | Chapters 12 through 20 (inclusive) |
+| `12.1-12.5`     | Decimal range, step `0.1`          |
+| `1-3,5,7.1,7.2` | Comma-separated combination        |
 
 Duplicates are removed. Ranges must be ascending and numeric.
 
@@ -295,14 +295,14 @@ Errors are also structured in JSON mode:
 
 ## Exit codes
 
-| Code | Meaning |
-| --- | --- |
-| `0` | Success |
-| `1` | General error (e.g. duplicate series, invalid rename) |
-| `2` | Ambiguous query — multiple series matched |
-| `3` | Series not found |
-| `5` | Database error (missing DB, `sqlite3` binary not found, etc.) |
-| `10` | User declined a destructive confirmation |
+| Code | Meaning                                                       |
+| ---- | ------------------------------------------------------------- |
+| `0`  | Success                                                       |
+| `1`  | General error (e.g. duplicate series, invalid rename)         |
+| `2`  | Ambiguous query — multiple series matched                     |
+| `3`  | Series not found                                              |
+| `5`  | Database error (missing DB, `sqlite3` binary not found, etc.) |
+| `10` | User declined a destructive confirmation                      |
 
 ---
 
@@ -320,24 +320,3 @@ Inspect it directly with:
 ```bash
 kami db shell
 ```
-
----
-
-## Development
-
-```bash
-# Install dependencies
-uv sync
-
-# Run the CLI from source
-uv run kami --help
-
-# Use a scratch database
-KAMI_DB=./dev.db uv run kami init
-```
-
----
-
-## License
-
-See `LICENSE` (if present) or the project metadata.
