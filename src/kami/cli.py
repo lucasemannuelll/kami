@@ -11,6 +11,7 @@ from kami.formatting import ResolveExit, error_console
 app = typer.Typer(
     name="kami",
     help="A minimal reading ledger for manga, manhwa, manhua, and web novels.",
+    version="0.1.0",
     no_args_is_help=True,
     add_completion=False,
 )

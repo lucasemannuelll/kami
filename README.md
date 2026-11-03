@@ -20,23 +20,110 @@ A minimal reading ledger for manga, manhwa, manhua, web novels, comics, and more
 ---
 
 ## Installation
-
-Requires **Python ≥ 3.10**.
-
-With [`uv`](https://github.com/astral-sh/uv):
+Start by cloning the repository and moving into it — the installer commands
+below assume you're inside the repo directory:
 
 ```bash
-uv sync
-uv run kami --help
+git clone <repository-url>
+cd kami
 ```
 
-Or install the package directly:
+### Option 1: `uv` (recommended)
+
+[`uv`](https://docs.astral.sh/uv/) installs the CLI in an isolated environment and
+links the `kami` executable into `~/.local/bin`.
 
 ```bash
-pip install .
+uv tool install .
+```
+
+For development (changes to source are picked up without reinstalling):
+
+```bash
+uv tool install --editable .
+```
+
+If the `kami` command is not found afterwards, add `~/.local/bin` to your `PATH`:
+
+```bash
+uv tool update-shell
+```
+
+…then restart your terminal (or source your shell profile).
+
+---
+
+### Option 2: `pipx`
+
+[`pipx`](https://pipx.pypa.io/) creates a dedicated virtual environment for `kami`
+and exposes the executable on your `PATH`.
+
+```bash
+pipx install .
+```
+
+For development:
+
+```bash
+pipx install --editable .
+```
+
+If you get a "command not found" error, ensure the pipx bin directory is on your
+`PATH` (usually `~/.local/bin` on Linux/macOS):
+
+```bash
+pipx ensurepath
+```
+
+…then restart your terminal.
+
+---
+
+### Option 3: `pip`
+
+`pip` installs `kami` and its dependencies into your **user site-packages**.
+Use the `--user` flag to avoid modifying system Python.
+
+```bash
+pip install --user .
+```
+
+For development:
+
+```bash
+pip install --user --editable .
+```
+
+> Unlike `uv` and `pipx`, `pip` does **not** isolate `kami`'s dependencies.
+> They are shared with any other packages installed in the same environment,
+> which can lead to version conflicts over time. Prefer `uv` or `pipx` unless
+> you're working inside a dedicated virtual environment (e.g. `python -m venv .venv`).
+
+If `kami` is not found, make sure the user script directory is on your `PATH`:
+- **Linux/macOS:** `~/.local/bin`
+- **Windows:** `%APPDATA%\Python\Scripts`
+
+---
+
+### Verify the install
+
+Regardless of which option you used:
+
+```bash
+kami --version
+# or
 kami --help
 ```
 
+---
+
+### Uninstalling
+
+```bash
+uv tool uninstall kami       # if installed with uv
+pipx uninstall kami          # if installed with pipx
+pip uninstall kami           # if installed with pip
+```
 ---
 
 ## Quick start
