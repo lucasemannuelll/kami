@@ -67,7 +67,7 @@ def resolve_series(conn: sqlite3.Connection, search_query: str) -> Resolution:
         "SELECT id, title, series_type FROM series "
         "WHERE title LIKE ? ESCAPE '\\' "
         "ORDER BY title",
-        (_escape_like(cleaned_query) + "%",),
+        ("%" + _escape_like(cleaned_query) + "%",),
     )
 
     if len(prefix_matches) == 1:

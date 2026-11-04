@@ -121,7 +121,9 @@ def render_show(detail: SeriesDetail, *, json_mode: bool) -> None:
 
     console.print("    Last chapters:")
     for chapter in detail.last_chapters:
-        console.print(f"    • {chapter.chapter} - {human_date(chapter.read_date)}")
+        console.print(
+            f"    • {chapter.chapter} - {human_date(chapter.read_date)}"
+        )
 
 
 def render_log_results(
@@ -224,7 +226,6 @@ def resolve_or_exit(conn: Any, query: str, *, json_mode: bool) -> int | None:
     if isinstance(resolution_result, NotFound):
         render_not_found(
             resolution_result.query,
-            resolution_result.candidates,
             json_mode=json_mode,
         )
         raise ResolveExit(3)
