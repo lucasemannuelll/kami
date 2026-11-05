@@ -54,12 +54,13 @@ def register(app: typer.Typer) -> None:
         status: str = typer.Option("Reading", "--status", "-s"),
         tags: list[str] = typer.Option([], "--tag", help="Repeatable"),
         started_at: str | None = typer.Option(
-            None,
-            "--started",
-            help="YYYY-MM-DD, or 'pre-catalog'",
+            None, "--started", help="YYYY-MM-DD, or 'pre-catalog'"
         ),
     ) -> None:
-        """Register a new series. Available types: Manga, Manhwa, Manhua, Novel, Webtoon, Comic."""
+        """
+        Register a new series.
+        Available types: Manga, Manhwa, Manhua, Novel, Webtoon, Comic.
+        """
         _validate_choice(series_type, TYPE_CHOICES, "--type")
         _validate_choice(status, STATUS_CHOICES, "--status")
 
@@ -84,7 +85,8 @@ def register(app: typer.Typer) -> None:
                 )
             except sqlite3.IntegrityError:
                 console.print(
-                    f"[red]error:[/] series {title!r} - [{series_type}] already exists"
+                    f"[red]error:[/] "
+                    f"series {title!r} - [{series_type}] already exists"
                 )
                 raise typer.Exit(code=1) from None
 

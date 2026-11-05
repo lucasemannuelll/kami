@@ -25,27 +25,23 @@ def _filter_existing(conn, series_id: int, chapters: list[str]) -> list[str]:
 
 
 def _report_dry_run(
-    chapters: list[str],
-    delete: bool,
-    json_mode: bool,
+    chapters: list[str], delete: bool, json_mode: bool
 ) -> None:
     if json_mode:
         import json
 
-        print(
-            json.dumps(
-                {
-                    "dry_run": True,
-                    "chapters": chapters,
-                    "delete": delete,
-                }
-            )
+        print(json.dumps({
+                "dry_run": True,
+                "chapters": chapters,
+                "delete": delete,
+            })
         )
         return
 
     action_description: str = "delete" if delete else "clear read date on"
     console.print(
-        f"Would {action_description} {len(chapters)} chapter(s): {', '.join(chapters)}"
+        f"Would {action_description} {len(chapters)} chapter(s): "
+        f"{', '.join(chapters)}"
     )
 
 
@@ -81,18 +77,16 @@ def register(app: typer.Typer) -> None:
             help="Delete rows entirely (default: clear read date)",
         ),
         yes: bool = typer.Option(
-            False,
-            "--yes",
-            "-y",
-            help="Skip confirmation",
+            False, "--yes", "-y", help="Skip confirmation"
         ),
         dry_run: bool = typer.Option(
-            False,
-            "--dry-run",
-            help="Show what would change",
+            False, "--dry-run", help="Show what would change"
         ),
     ) -> None:
-        """Without --delete: set read_date=NULL. With --delete: remove rows (prompts at >=10)."""
+        """
+        Without --delete: set read_date=NULL.
+        With --delete: remove rows (prompts at >=10).
+        """
         chapters = _parse_spec(spec)
 
         db_path = resolve_db_path(ctx.obj["db"])

@@ -42,7 +42,9 @@ def _report_dry_run(
     if not new and not update:
         console.print("[dim]Nothing to do[/]")
     else:
-        console.print(f"[dim]Would log {len(chapters)} chapter(s) on {read_date}.[/]")
+        console.print(
+            f"[dim]Would log {len(chapters)} chapter(s) on {read_date}.[/]"
+        )
 
 
 def _resolve_date(date_input: str | None) -> str:
@@ -65,20 +67,23 @@ def register(app: typer.Typer) -> None:
     @app.command("log", help="Record chapters as read.")
     def log_cmd(
         ctx: typer.Context,
-        query: str = typer.Argument(..., help="Series title (or unique prefix)"),
+        query: str = typer.Argument(
+            ..., help="Series title (or unique prefix)"
+        ),
         spec: str = typer.Argument(
-            ...,
-            help="Chapter spec: '213', '218-225', '12.1,12.2,13'",
+            ..., help="Chapter spec: '213', '218-225', '12.1,12.2,13'",
         ),
         date: str | None = typer.Option(
-            None,
-            "--date",
-            "-d",
-            help="YYYY-MM-DD (default: today)",
+            None, "--date", "-d", help="YYYY-MM-DD (default: today)",
         ),
-        dry_run: bool = typer.Option(False, "--dry-run", help="Show what would change"),
+        dry_run: bool = typer.Option(
+            False, "--dry-run", help="Show what would change"
+        ),
     ) -> None:
-        """Log chapters (e.g. '218-225', '12.1,12.2,13') on a date (default: today)."""
+        """
+        Log chapters (e.g. '218-225', '12.1,12.2,13') on a date
+        (default: today).
+        """
         read_date = _resolve_date(date)
         chapters = _parse_spec(spec)
 
@@ -88,8 +93,11 @@ def register(app: typer.Typer) -> None:
             series_id = resolve_or_exit(conn, query, json_mode=ctx.obj["json"])
 
             if dry_run:
-                _report_dry_run(conn, series_id, chapters, read_date, ctx.obj["json"])
+                _report_dry_run(
+                    conn, series_id, chapters, read_date, ctx.obj["json"]
+                )
                 return
+
             log_chapters(
                 conn,
                 series_id,

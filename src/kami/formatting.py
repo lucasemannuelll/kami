@@ -147,7 +147,8 @@ def render_log_results(
     action_prefix = "Would log " if dry_run else "Logged"
     chapter_word = "chapter" if len(chapters) == 1 else "chapters"
     console.print(
-        f"{action_prefix} {len(chapters)} {chapter_word} for [bold]{title}[/]".strip()
+        f"{action_prefix} {len(chapters)} {chapter_word} "
+        f"for [bold]{title}[/]".strip()
     )
 
 
@@ -178,7 +179,9 @@ def render_unlog_result(
     )
 
 
-def render_ambiguous(query: str, candidates: list[Any], *, json_mode: bool) -> None:
+def render_ambiguous(
+    query: str, candidates: list[Any], *, json_mode: bool
+) -> None:
     if json_mode:
         print(
             json.dumps(
@@ -199,7 +202,9 @@ def render_ambiguous(query: str, candidates: list[Any], *, json_mode: bool) -> N
         return
     error_console.print(f"[red]error:[/] {query!r} matches multiple series: ")
     for candidate in candidates:
-        error_console.print(f"    • {candidate.title} [{candidate.series_type}]")
+        error_console.print(
+            f"    • {candidate.title} [{candidate.series_type}]"
+        )
     error_console.print("Use a longer query, or the full title")
 
 

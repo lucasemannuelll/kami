@@ -40,10 +40,17 @@ def register(app: typer.Typer) -> None:
     @app.command("rm", help="Delete a series and its chapters.")
     def rm_cmd(
         ctx: typer.Context,
-        query: str = typer.Argument(..., help="Series title (or unique prefix)"),
-        yes: bool = typer.Option(False, "--yes", "-y", help="Skip confirmation"),
+        query: str = typer.Argument(
+            ..., help="Series title (or unique prefix)"
+        ),
+        yes: bool = typer.Option(
+            False, "--yes", "-y", help="Skip confirmation"
+        ),
     ) -> None:
-        """Remove a series (and cascade its chapters/tags links). Prompts unless --yes."""
+        """
+        Remove a series (and cascade its chapters/tags links).
+        Prompts unless --yes.
+        """
         db_path: Path = resolve_db_path(ctx.obj["db"])
         with connect(db_path) as conn:
             series_id: int | None = resolve_or_exit(

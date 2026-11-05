@@ -37,9 +37,14 @@ def register(app: typer.Typer) -> None:
         else:
             print(str(db_path))
 
-    @db_app.command("shell", help="Open an interactive sqlite3 shell on the DB.")
+    @db_app.command(
+        "shell", help="Open an interactive sqlite3 shell on the DB."
+    )
     def db_shell_cmd(ctx: typer.Context) -> None:
-        """Run sqlite3 with .headers on / .mode box; extra args go before the DB path."""
+        """
+        Run sqlite3 with .headers on / .mode box;
+        extra args go before the DB path.
+        """
         db_path = resolve_db_path(ctx.obj["db"])
 
         if not db_path.exists():

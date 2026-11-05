@@ -26,20 +26,13 @@ def version_callback(value: bool) -> None:
 def root(
     ctx: typer.Context,
     db: str | None = typer.Option(
-        None,
-        "--db",
-        help="Path to the SQLite database (overrides $KAMI_DB)",
+        None, "--db", help="Path to the SQLite database (overrides $KAMI_DB)"
     ),
     json_mode: bool = typer.Option(
-        False,
-        "--json",
-        help="Output machine-readable JSON.",
+        False, "--json", help="Output machine-readable JSON."
     ),
     verbose: bool = typer.Option(
-        False,
-        "--verbose",
-        "-v",
-        help="Print debug info (SQL, exec commands)",
+        False, "--verbose", "-v", help="Print debug info (SQL, exec commands)"
     ),
     version: bool = typer.Option(
         None,
@@ -49,11 +42,7 @@ def root(
         help="Show the version and exit",
     ),
 ) -> None:
-    ctx.obj = {
-        "db": db,
-        "json": json_mode,
-        "verbose": verbose,
-    }
+    ctx.obj = {"db": db, "json": json_mode, "verbose": verbose}
 
 
 def _register_commands() -> None:

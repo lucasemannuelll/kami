@@ -30,7 +30,9 @@ class NotFound:
 Resolution = Resolved | Ambiguous | NotFound
 
 
-def _fetch(conn: sqlite3.Connection, sql_query: str, params: tuple) -> list[SeriesRow]:
+def _fetch(
+    conn: sqlite3.Connection, sql_query: str, params: tuple
+) -> list[SeriesRow]:
     series_records = conn.execute(sql_query, params).fetchall()
 
     return [
@@ -55,7 +57,8 @@ def resolve_series(conn: sqlite3.Connection, search_query: str) -> Resolution:
 
     exact_matches: list[SeriesRow] = _fetch(
         conn,
-        "SELECT id, title, series_type FROM series WHERE title = ? COLLATE NOCASE",
+        "SELECT id, title, series_type "
+        "FROM series WHERE title = ? COLLATE NOCASE",
         (cleaned_query,),
     )
 

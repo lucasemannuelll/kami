@@ -5,7 +5,9 @@ import sqlite3
 from kami.models import Chapter, Series, SeriesDetail, SeriesSummary
 
 
-def _set_tags(conn: sqlite3.Connection, series_id: int, tags: list[str]) -> None:
+def _set_tags(
+    conn: sqlite3.Connection, series_id: int, tags: list[str]
+) -> None:
     for tag in tags:
         add_tag_to_series(conn, series_id, tag)
 
@@ -91,7 +93,9 @@ def update_series(
     )
 
 
-def add_tag_to_series(conn: sqlite3.Connection, series_id: int, tag: str) -> bool:
+def add_tag_to_series(
+    conn: sqlite3.Connection, series_id: int, tag: str
+) -> bool:
     tag_id: int = _ensure_tag(conn, tag)
     cursor = conn.cursor()
 
@@ -103,7 +107,9 @@ def add_tag_to_series(conn: sqlite3.Connection, series_id: int, tag: str) -> boo
     return cursor.rowcount > 0
 
 
-def remove_tag_from_series(conn: sqlite3.Connection, series_id: int, tag: str) -> bool:
+def remove_tag_from_series(
+    conn: sqlite3.Connection, series_id: int, tag: str
+) -> bool:
     cursor = conn.cursor()
 
     cursor.execute(
@@ -167,7 +173,8 @@ def unlog_chapters(
         )
     else:
         cursor.executemany(
-            "UPDATE chapters SET read_date = NULL WHERE series_id = ? AND chapter = ?",
+            "UPDATE chapters SET read_date = NULL "
+            "WHERE series_id = ? AND chapter = ?",
             [(series_id, chapter) for chapter in chapters],
         )
     return existing_chapter_count
@@ -259,7 +266,9 @@ def list_series(
     ]
 
 
-def get_series_detail(conn: sqlite3.Connection, series_id: int) -> SeriesDetail | None:
+def get_series_detail(
+    conn: sqlite3.Connection, series_id: int
+) -> SeriesDetail | None:
 
     series = get_series(conn, series_id)
     if series is None:

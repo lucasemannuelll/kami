@@ -14,7 +14,9 @@ def parse_date(date_str: str) -> date:
     try:
         return date.fromisoformat(date_str)
     except ValueError as e:
-        raise DateParseError(f"Invalid: {date_str!r}\nExpected: YYYY-MM-DD") from e
+        raise DateParseError(
+            f"Invalid: {date_str!r}\nExpected: YYYY-MM-DD"
+        ) from e
 
 
 def today_iso() -> str:
