@@ -26,23 +26,86 @@ def _summarize(updated_fields: dict[str, object]) -> str:
     return " ".join(summary_parts)
 
 
+def _validate_status(status: str | None) -> None:
+    if status is not None and status not in STATUS_CHOICES:
+        raise typer.BadParameter(
+            f"invalid status {status!r}; "
+            f"choose from {', '.join(STATUS_CHOICES)}",
+            param_hint="--status",
+        )
+
+
+def _record_meta_changes(
+    updated_fields: dict[str, object],
+    *,
+    new_title: str | None,
+    status: str | None,
+    author: str | None,
+) -> None:
+    if new_title is not None:
+        updated_fields["title"] = new_title
+    if status is not None:
+        updated_fields["status"] = status
+    if author is not None:
+        updated_fields["author"] = author
+
+
+def _apply_metadata_update(
+    conn: sqlite3.Connection,
+    series_id: int,
+    *,
+    new_title: str | None,
+    status: str | None,
+    author: str | None,
+) -> None:
+    try:
+        update_series(
+            conn, series_id, title=new_title, status=status, author=author
+        )
+    except sqlite3.IntegrityError:
+        console.print(
+            f"[red]error:[/red] cannot rename to {new_title!r}: "
+            "a series with that title and type already exists"
+        )
+        raise typer.Exit(code=1) from None
+
+
+def _apply_tag_changes(
+    conn: sqlite3.Connection,
+    series_id: int,
+    add_tags: list[str],
+    remove_tags: list[str],
+) -> tuple[list[str], list[str]]:
+    added_tags: list[str] = []
+    removed_tags: list[str] = []
+
+    for tag in add_tags:
+        if add_tag_to_series(conn, series_id, tag):
+            added_tags.append(tag)
+    for tag in remove_tags:
+        if remove_tag_from_series(conn, series_id, tag):
+            removed_tags.append(tag)
+
+    return added_tags, removed_tags
+
+
 def register(app: typer.Typer) -> None:
     @app.command("edit", help="Edit a series' metadata or tags.")
     def edit_cmd(
         ctx: typer.Context,
-        query: str = typer.Argument(..., help="Series title (or unique prefix)"),
+        query: str = typer.Argument(
+            ..., help="Series title (or unique prefix)"
+        ),
         new_title: str | None = typer.Option(None, "--title"),
         status: str | None = typer.Option(None, "--status", "-s"),
         author: str | None = typer.Option(None, "--author", "-a"),
         add_tags: list[str] = typer.Option([], "--add-tags"),
         remove_tags: list[str] = typer.Option([], "--remove-tags"),
     ) -> None:
-        """Rename, change status/author, or add/remove tags on a resolved series."""
-        if status is not None and status not in STATUS_CHOICES:
-            raise typer.BadParameter(
-                f"invalid status {status!r}; choose from {', '.join(STATUS_CHOICES)}",
-                param_hint="--status",
-            )
+        """
+        Rename, change status/author, or add/remove tags on a resolved series.
+        """
+        _validate_status(status)
 
         db_path: Path = resolve_db_path(ctx.obj["db"])
         updated_fields: dict[str, object] = {}
@@ -54,37 +117,21 @@ def register(app: typer.Typer) -> None:
                 json_mode=ctx.obj["json"],
             )
 
-            try:
-                update_series(
-                    conn,
-                    series_id,
-                    title=new_title,
-                    status=status,
-                    author=author,
-                )
-            except sqlite3.IntegrityError:
-                console.print(
-                    f"[red]error:[/red] cannot rename to {new_title!r}: "
-                    "a series with that title and type already exists"
-                )
-                raise typer.Exit(code=1) from None
+            _apply_metadata_update(
+                conn,
+                series_id,
+                new_title=new_title,
+                status=status,
+                author=author,
+            )
 
-            if new_title is not None:
-                updated_fields["title"] = new_title
-            if status is not None:
-                updated_fields["status"] = status
-            if author is not None:
-                updated_fields["author"] = author
+            added_tags, removed_tags = _apply_tag_changes(
+                conn, series_id, add_tags, remove_tags
+            )
 
-            added_tags: list[str] = []
-            removed_tags: list[str] = []
-
-            for tag in add_tags:
-                if add_tag_to_series(conn, series_id, tag):
-                    added_tags.append(tag)
-            for tag in remove_tags:
-                if remove_tag_from_series(conn, series_id, tag):
-                    removed_tags.append(tag)
+        _record_meta_changes(
+            updated_fields, new_title=new_title, status=status, author=author
+        )
 
         if added_tags:
             updated_fields["tags_added"] = added_tags

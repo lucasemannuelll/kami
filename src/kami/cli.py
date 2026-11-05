@@ -18,7 +18,7 @@ app = typer.Typer(
 
 def version_callback(value: bool) -> None:
     if value:
-        typer.echo("kami 0.2.0")
+        typer.echo("kami 0.2.1")
         raise typer.Exit()
 
 
