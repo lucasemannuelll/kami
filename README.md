@@ -183,7 +183,7 @@ Add a series to the ledger.
 kami add TITLE --type TYPE [--author AUTHOR] [--status STATUS] [--tag TAG]... [--started DATE]
 ```
 
-- `--type`, `-t` — one of `Manga`, `Manhwa`, `Manhua`, `Novel`, `Webtoon`, `Comic`
+- `--type`, `-t` — one of `Manga`, `Manhwa`, `Manhua`, `Novel`, `Comic`
 - `--status`, `-s` — one of `Reading`, `Completed`, `On Hold`, `Dropped` (default: `Reading`)
 - `--author`, `-a` — optional author
 - `--tag` — repeatable
@@ -332,7 +332,7 @@ Duplicates are removed. Ranges must be ascending and numeric.
 
 ## Statuses and types
 
-**Types:** `Manga`, `Manhwa`, `Manhua`, `Novel`, `Webtoon`, `Comic`
+**Types:** `Manga`, `Manhwa`, `Manhua`, `Novel`, `Comic`
 
 **Statuses:** `Reading`, `Completed`, `On Hold`, `Dropped`
 

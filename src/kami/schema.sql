@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS series (
                 'Manhwa', 
                 'Manhua', 
                 'Novel', 
-                'Webtoon', 
-                'Comic')
+                'Comic'
+            )
         ),
     author TEXT,
     status TEXT NOT NULL DEFAULT 'Reading' 

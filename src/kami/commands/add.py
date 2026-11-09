@@ -16,7 +16,6 @@ TYPE_CHOICES: list[str] = [
     "Manhwa",
     "Manhua",
     "Novel",
-    "Webtoon",
     "Comic",
 ]
 STATUS_CHOICES: list[str] = [
@@ -48,7 +47,7 @@ def register(app: typer.Typer) -> None:
             ...,
             "--type",
             "-t",
-            help="Medium: Manga, Manhwa, Manhua, Novel, Webtoon",
+            help="Medium: Manga, Manhwa, Manhua, Novel",
         ),
         author: str | None = typer.Option(None, "--author", "-a"),
         status: str = typer.Option("Reading", "--status", "-s"),
@@ -59,7 +58,7 @@ def register(app: typer.Typer) -> None:
     ) -> None:
         """
         Register a new series.
-        Available types: Manga, Manhwa, Manhua, Novel, Webtoon, Comic.
+        Available types: Manga, Manhwa, Manhua, Novel, Comic.
         """
         _validate_choice(series_type, TYPE_CHOICES, "--type")
         _validate_choice(status, STATUS_CHOICES, "--status")
