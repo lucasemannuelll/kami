@@ -156,26 +156,19 @@ def render_unlog_result(
     *,
     title: str,
     chapters: list[str],
-    delete: bool,
     json_mode: bool,
     dry_run: bool,
 ) -> None:
     if json_mode:
-        print(
-            json.dumps(
-                {
-                    "series": title,
-                    "chapters": chapters,
-                    "delete": delete,
-                    "dry_run": dry_run,
-                }
-            )
-        )
+        print(json.dumps({
+            "series": title,
+            "chapters": chapters,
+            "dry_run": dry_run,
+        }))
         return
-    action_prefix = "Deleted" if delete else "Cleared read date on"
-    chapter_word = "chapter" if len(chapters) == 1 else "chapters"
     console.print(
-        f"{action_prefix} {len(chapters)} {chapter_word} for [bold]{title}[/]"
+        f"Deleted {len(chapters)} chapter(s) from [bold]{title}[/]: "
+        f"{', '.join(chapters)}"
     )
 
 

@@ -25,7 +25,7 @@ def _filter_existing(conn, series_id: int, chapters: list[str]) -> list[str]:
 
 
 def _report_dry_run(
-    chapters: list[str], delete: bool, json_mode: bool
+    chapters: list[str], json_mode: bool
 ) -> None:
     if json_mode:
         import json
@@ -33,14 +33,12 @@ def _report_dry_run(
         print(json.dumps({
                 "dry_run": True,
                 "chapters": chapters,
-                "delete": delete,
             })
         )
         return
 
-    action_description: str = "delete" if delete else "clear read date on"
     console.print(
-        f"Would {action_description} {len(chapters)} chapter(s): "
+        f"Would {len(chapters)} chapter(s): "
         f"{', '.join(chapters)}"
     )
 
@@ -71,11 +69,6 @@ def register(app: typer.Typer) -> None:
             help="Series title (or unique prefix)",
         ),
         spec: str = typer.Argument(..., help="Chapter spec"),
-        delete: bool = typer.Option(
-            False,
-            "--delete",
-            help="Delete rows entirely (default: clear read date)",
-        ),
         yes: bool = typer.Option(
             False, "--yes", "-y", help="Skip confirmation"
         ),
@@ -83,10 +76,7 @@ def register(app: typer.Typer) -> None:
             False, "--dry-run", help="Show what would change"
         ),
     ) -> None:
-        """
-        Without --delete: set read_date=NULL.
-        With --delete: remove rows (prompts at >=10).
-        """
+        """Remove chapter rows for a series (undo accidental logging)."""
         chapters = _parse_spec(spec)
 
         db_path = resolve_db_path(ctx.obj["db"])
@@ -104,18 +94,17 @@ def register(app: typer.Typer) -> None:
                 return
 
             if dry_run:
-                _report_dry_run(matched, delete, ctx.obj["json"])
+                _report_dry_run(matched, ctx.obj["json"])
                 return
 
-            if delete and len(matched) >= _CONFIRM_THRESHOLD and not yes:
+            if len(matched) >= _CONFIRM_THRESHOLD and not yes:
                 _confirm_or_exit(len(matched))
 
-            unlog_chapters(conn, series_id, matched, delete=delete)
+            unlog_chapters(conn, series_id, matched)
 
         render_unlog_result(
             title=query,
             chapters=matched,
-            delete=delete,
             json_mode=ctx.obj["json"],
             dry_run=False,
         )

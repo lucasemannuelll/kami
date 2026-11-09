@@ -148,36 +148,14 @@ def unlog_chapters(
     conn: sqlite3.Connection,
     series_id: int,
     chapters: list[str],
-    *,
-    delete: bool,
 ) -> int:
     cursor = conn.cursor()
 
-    if not chapters:
-        return 0
-
-    existing_chapter_count = 0
-
-    for chapter in chapters:
-        chapter_record = conn.execute(
-            "SELECT 1 FROM chapters WHERE series_id = ? AND chapter = ?",
-            (series_id, chapter),
-        ).fetchone()
-        if chapter_record is not None:
-            existing_chapter_count += 1
-
-    if delete:
-        cursor.executemany(
-            "DELETE FROM chapters WHERE series_id = ? AND chapter = ?",
-            [(series_id, chapter) for chapter in chapters],
-        )
-    else:
-        cursor.executemany(
-            "UPDATE chapters SET read_date = NULL "
-            "WHERE series_id = ? AND chapter = ?",
-            [(series_id, chapter) for chapter in chapters],
-        )
-    return existing_chapter_count
+    cursor.executemany(
+        "DELETE FROM chapters WHERE series_id = ? AND chapter = ?",
+        [(series_id, chapter) for chapter in chapters],
+    )
+    return cursor.rowcount
 
 
 def get_series(conn: sqlite3.Connection, series_id: int) -> Series | None:
