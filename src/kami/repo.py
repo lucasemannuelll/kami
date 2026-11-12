@@ -6,13 +6,13 @@ from kami.models import Chapter, Series, SeriesDetail, SeriesSummary
 
 
 def _set_tags(
-    conn: sqlite3.Connection, series_id: int, tags: list[str]
+    conn, series_id, tags
 ) -> None:
     for tag in tags:
         add_tag_to_series(conn, series_id, tag)
 
 
-def _ensure_tag(conn: sqlite3.Connection, name: str) -> int:
+def _ensure_tag(conn, name) -> int:
     cursor = conn.cursor()
 
     cursor.execute("INSERT OR IGNORE INTO tags (name) VALUES (?)", (name,))
@@ -24,7 +24,7 @@ def _ensure_tag(conn: sqlite3.Connection, name: str) -> int:
     return int(tag_record["id"])
 
 
-def _tags_for(conn: sqlite3.Connection, series_id: int) -> tuple[str, ...]:
+def _tags_for(conn, series_id) -> tuple[str, ...]:
     cursor = conn.cursor()
     tag_records = cursor.execute(
         "SELECT t.name FROM tags t "
@@ -38,14 +38,14 @@ def _tags_for(conn: sqlite3.Connection, series_id: int) -> tuple[str, ...]:
 
 
 def add_series(
-    conn: sqlite3.Connection,
+    conn,
     *,
-    title: str,
-    series_type: str,
-    author: str | None,
-    status: str,
-    started_at: str | None,
-    tags: list[str],
+    title,
+    series_type,
+    author,
+    status,
+    started_at,
+    tags,
 ) -> int:
     cursor = conn.cursor()
     cursor.execute(
@@ -63,15 +63,15 @@ def add_series(
 
 
 def update_series(
-    conn: sqlite3.Connection,
-    series_id: int,
+    conn,
+    series_id,
     *,
-    title: str | None,
-    author: str | None,
-    status: str | None,
+    title,
+    author,
+    status,
 ) -> None:
-    set_clauses: list[str] = []
-    query_params: list[object] = []
+    set_clauses = []
+    query_params = []
 
     if title is not None:
         set_clauses.append("title = ?")
@@ -94,9 +94,9 @@ def update_series(
 
 
 def add_tag_to_series(
-    conn: sqlite3.Connection, series_id: int, tag: str
+    conn, series_id, tag
 ) -> bool:
-    tag_id: int = _ensure_tag(conn, tag)
+    tag_id = _ensure_tag(conn, tag)
     cursor = conn.cursor()
 
     cursor.execute(
@@ -108,7 +108,7 @@ def add_tag_to_series(
 
 
 def remove_tag_from_series(
-    conn: sqlite3.Connection, series_id: int, tag: str
+    conn, series_id, tag
 ) -> bool:
     cursor = conn.cursor()
 
@@ -122,16 +122,16 @@ def remove_tag_from_series(
     return cursor.rowcount > 0
 
 
-def remove_series(conn: sqlite3.Connection, series_id: int) -> None:
+def remove_series(conn, series_id) -> None:
     cursor = conn.cursor()
     cursor.execute("DELETE FROM series WHERE id = ?", (series_id,))
 
 
 def log_chapters(
-    conn: sqlite3.Connection,
-    series_id: int,
-    chapters: list[str],
-    read_date: str | None,
+    conn,
+    series_id,
+    chapters,
+    read_date,
 ) -> int:
     cursor = conn.cursor()
     cursor.executemany(
@@ -145,9 +145,9 @@ def log_chapters(
 
 
 def unlog_chapters(
-    conn: sqlite3.Connection,
-    series_id: int,
-    chapters: list[str],
+    conn,
+    series_id,
+    chapters,
 ) -> int:
     cursor = conn.cursor()
 
@@ -158,7 +158,7 @@ def unlog_chapters(
     return cursor.rowcount
 
 
-def get_series(conn: sqlite3.Connection, series_id: int) -> Series | None:
+def get_series(conn, series_id) -> Series | None:
     cursor = conn.cursor()
 
     series_record = cursor.execute(
@@ -183,14 +183,14 @@ def get_series(conn: sqlite3.Connection, series_id: int) -> Series | None:
 
 
 def list_series(
-    conn: sqlite3.Connection,
+    conn,
     *,
-    status: str | None = None,
-    series_type: str | None = None,
-    tags: list[str] | None = None,
+    status = None,
+    series_type = None,
+    tags = None,
 ) -> list[SeriesSummary]:
-    filters: list[str] = []
-    query_params: list[object] = []
+    filters = []
+    query_params = []
 
     if status is not None:
         filters.append("s.status = ?")
@@ -245,7 +245,7 @@ def list_series(
 
 
 def get_series_detail(
-    conn: sqlite3.Connection, series_id: int
+    conn, series_id
 ) -> SeriesDetail | None:
 
     series = get_series(conn, series_id)
@@ -286,7 +286,7 @@ def get_series_detail(
 
 
 def chapter_exists(
-    conn: sqlite3.Connection, series_id: int, chapter: str
+    conn, series_id, chapter
 ) -> tuple[bool, str | None]:
     cursor = conn.cursor()
 

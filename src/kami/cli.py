@@ -15,13 +15,6 @@ app = typer.Typer(
     add_completion=False,
 )
 
-
-def version_callback(value: bool) -> None:
-    if value:
-        typer.echo("kami 0.2.1")
-        raise typer.Exit()
-
-
 @app.callback()
 def root(
     ctx: typer.Context,
@@ -34,15 +27,12 @@ def root(
     verbose: bool = typer.Option(
         False, "--verbose", "-v", help="Print debug info (SQL, exec commands)"
     ),
-    version: bool = typer.Option(
-        None,
-        "--version",
-        callback=version_callback,
-        is_eager=True,
-        help="Show the version and exit",
-    ),
 ) -> None:
-    ctx.obj = {"db": db, "json": json_mode, "verbose": verbose}
+    ctx.obj = {
+        "db": db, 
+        "json": json_mode, 
+        "verbose": verbose
+    }
 
 
 def _register_commands() -> None:

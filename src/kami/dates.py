@@ -7,7 +7,7 @@ class DateParseError(ValueError):
     """Raised when a date string cannot be parsed."""
 
 
-def parse_date(date_str: str) -> date:
+def parse_date(date_str) -> date:
     if not date_str:
         raise DateParseError("date is empty")
 

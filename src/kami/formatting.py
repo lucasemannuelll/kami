@@ -14,12 +14,12 @@ error_console = Console(stderr=True)
 
 
 class ResolveExit(Exception):
-    def __init__(self, code: int) -> None:
+    def __init__(self, code) -> None:
         super().__init__(f"resolve failed (exit {code})")
         self.code = code
 
 
-def _summary_to_dict(summary: SeriesSummary) -> dict[str, Any]:
+def _summary_to_dict(summary) -> dict[str, Any]:
     return {
         "id": summary.id,
         "title": summary.title,
@@ -32,7 +32,7 @@ def _summary_to_dict(summary: SeriesSummary) -> dict[str, Any]:
     }
 
 
-def _detail_to_dict(detail: SeriesDetail) -> dict[str, Any]:
+def _detail_to_dict(detail) -> dict[str, Any]:
     series = detail.series
 
     return {
@@ -51,26 +51,26 @@ def _detail_to_dict(detail: SeriesDetail) -> dict[str, Any]:
     }
 
 
-def emit(text: str, *, json_mode: bool, log_result: dict[str, Any]) -> None:
+def emit(text, *, json_mode, log_result) -> None:
     if json_mode:
         typer_echo(json.dumps(log_result))
     else:
         console.print(text)
 
 
-def typer_echo(text: str) -> None:
+def typer_echo(text) -> None:
     print(text)
 
 
-def human_date(read_date: str | None) -> str:
+def human_date(read_date) -> str:
     return read_date if read_date is not None else "unknown"
 
 
-def human_tags(tags: tuple[str, ...]) -> str:
+def human_tags(tags) -> str:
     return ", ".join(tags) if tags else "-"
 
 
-def render_list(summaries: list[SeriesSummary], *, json_mode: bool) -> None:
+def render_list(summaries, *, json_mode) -> None:
     if json_mode:
         print(json.dumps([_summary_to_dict(summary) for summary in summaries]))
         return
@@ -98,7 +98,7 @@ def render_list(summaries: list[SeriesSummary], *, json_mode: bool) -> None:
     console.print(table)
 
 
-def render_show(detail: SeriesDetail, *, json_mode: bool) -> None:
+def render_show(detail, *, json_mode) -> None:
     if json_mode:
         print(json.dumps(_detail_to_dict(detail)))
         return
@@ -128,11 +128,11 @@ def render_show(detail: SeriesDetail, *, json_mode: bool) -> None:
 
 def render_log_results(
     *,
-    title: str,
-    chapters: list[str],
-    read_date: str,
-    json_mode: bool,
-    dry_run: bool,
+    title,
+    chapters,
+    read_date,
+    json_mode,
+    dry_run,
 ) -> None:
     log_result = {
         "series": title,
@@ -154,10 +154,10 @@ def render_log_results(
 
 def render_unlog_result(
     *,
-    title: str,
-    chapters: list[str],
-    json_mode: bool,
-    dry_run: bool,
+    title,
+    chapters,
+    json_mode,
+    dry_run,
 ) -> None:
     if json_mode:
         print(json.dumps({
@@ -173,7 +173,7 @@ def render_unlog_result(
 
 
 def render_ambiguous(
-    query: str, candidates: list[Any], *, json_mode: bool
+    query, candidates, *, json_mode
 ) -> None:
     if json_mode:
         print(
@@ -201,7 +201,7 @@ def render_ambiguous(
     error_console.print("Use a longer query, or the full title")
 
 
-def render_not_found(query: str, *, json_mode: bool) -> None:
+def render_not_found(query, *, json_mode) -> None:
     if json_mode:
         print(json.dumps({"error": "not_found", "query": query}))
         return
@@ -209,7 +209,7 @@ def render_not_found(query: str, *, json_mode: bool) -> None:
     error_console.print(f"[red]error:[/] no series matching {query!r}")
 
 
-def resolve_or_exit(conn: Any, query: str, *, json_mode: bool) -> int | None:
+def resolve_or_exit(conn, query, *, json_mode) -> int | None:
     from kami.resolve import resolve_series
 
     resolution_result = resolve_series(conn, query)

@@ -15,7 +15,7 @@ class DatabaseNotInitialized(KamiError):
     """DB file missing"""
 
 
-def connect(db_path: Path) -> sqlite3.Connection:
+def connect(db_path) -> sqlite3.Connection:
     if not db_path.exists():
         raise DatabaseNotInitialized(
             f"db not found at {db_path}. Run 'kami init'"
@@ -28,8 +28,8 @@ def connect(db_path: Path) -> sqlite3.Connection:
     return conn
 
 
-def init_schema(db_path: Path) -> bool:
-    is_new_database: bool = not db_path.exists()
+def init_schema(db_path) -> bool:
+    is_new_database = not db_path.exists()
     ensure_parent_dir(db_path)
 
     conn = sqlite3.connect(db_path)
