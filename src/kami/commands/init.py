@@ -11,13 +11,13 @@ def register(app: typer.Typer) -> None:
     @app.command("init", help="Create the database and schema.")
     def init_cmd(ctx: typer.Context) -> None:
         """Initialize the kami SQLite database (creates parent dirs)."""
-        db_path: str = resolve_db_path(ctx.obj["db"])
-        is_new_database: bool = init_schema(db_path)
+        db_path = resolve_db_path(ctx.obj["db"])
+        is_new_database = init_schema(db_path)
 
         if is_new_database:
-            status_message: str = f"Initialized db at {db_path}"
+            status_message = f"Initialized db at {db_path}"
         else:
-            status_message: str = f"Db already Initialized at {db_path}"
+            status_message = f"Db already Initialized at {db_path}"
 
         emit(
             status_message,

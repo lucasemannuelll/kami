@@ -11,10 +11,10 @@ from kami.repo import chapter_exists, log_chapters
 
 
 def _report_dry_run(
-    conn, series_id: int, chapters: list[str], read_date: str, json_mode: bool
+    conn, series_id, chapters, read_date, json_mode
 ) -> None:
-    new: list[str] = []
-    update: list[str] = []
+    new = []
+    update = []
 
     for ch in chapters:
         exists, _prev = chapter_exists(conn, series_id, ch)
@@ -47,7 +47,7 @@ def _report_dry_run(
         )
 
 
-def _resolve_date(date_input: str | None) -> str:
+def _resolve_date(date_input) -> str:
     if date_input is None:
         return today_iso()
     try:
@@ -56,7 +56,7 @@ def _resolve_date(date_input: str | None) -> str:
         raise typer.BadParameter(str(e), param_hint="--date") from e
 
 
-def _parse_spec(chapter_spec: str) -> list[str]:
+def _parse_spec(chapter_spec) -> list[str]:
     try:
         return parse_chapter_spec(chapter_spec)
     except ChapterSpecError as e:

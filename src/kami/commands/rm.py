@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-from pathlib import Path
 
 import typer
 
@@ -11,13 +10,13 @@ from kami.formatting import console, emit, resolve_or_exit
 from kami.repo import get_series_detail, remove_series
 
 
-def _confirm_or_exit(detail: object, *, json_mode: bool) -> None:
+def _confirm_or_exit(detail, *, json_mode) -> None:
     from kami.models import SeriesDetail
 
     assert isinstance(detail, SeriesDetail)
 
-    chapter_count: int = detail.chapters_read
-    chapter_word: str = "chapter" if chapter_count == 1 else "chapters"
+    chapter_count = detail.chapters_read
+    chapter_word = "chapter" if chapter_count == 1 else "chapters"
 
     if not sys.stdin.isatty():
         console.print(
@@ -31,7 +30,7 @@ def _confirm_or_exit(detail: object, *, json_mode: bool) -> None:
         f"{chapter_count} logged {chapter_word}? This cannot be undone."
     )
 
-    confirmed: bool = typer.confirm("Continue?", default=False)
+    confirmed = typer.confirm("Continue?", default=False)
     if not confirmed:
         raise typer.Exit(code=10)
 
@@ -51,9 +50,9 @@ def register(app: typer.Typer) -> None:
         Remove a series (and cascade its chapters/tags links).
         Prompts unless --yes.
         """
-        db_path: Path = resolve_db_path(ctx.obj["db"])
+        db_path = resolve_db_path(ctx.obj["db"])
         with connect(db_path) as conn:
-            series_id: int | None = resolve_or_exit(
+            series_id = resolve_or_exit(
                 conn, query, json_mode=ctx.obj["json"]
             )
             detail = get_series_detail(conn, series_id)

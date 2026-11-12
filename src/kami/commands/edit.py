@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sqlite3
-from pathlib import Path
 
 import typer
 
@@ -12,8 +11,8 @@ from kami.formatting import console, emit, resolve_or_exit
 from kami.repo import add_tag_to_series, remove_tag_from_series, update_series
 
 
-def _summarize(updated_fields: dict[str, object]) -> str:
-    summary_parts: list[str] = []
+def _summarize(updated_fields) -> str:
+    summary_parts = []
 
     for field_name in ("title", "status", "author"):
         if field_name in updated_fields:
@@ -26,7 +25,7 @@ def _summarize(updated_fields: dict[str, object]) -> str:
     return " ".join(summary_parts)
 
 
-def _validate_status(status: str | None) -> None:
+def _validate_status(status) -> None:
     if status is not None and status not in STATUS_CHOICES:
         raise typer.BadParameter(
             f"invalid status {status!r}; "
@@ -36,11 +35,11 @@ def _validate_status(status: str | None) -> None:
 
 
 def _record_meta_changes(
-    updated_fields: dict[str, object],
+    updated_fields,
     *,
-    new_title: str | None,
-    status: str | None,
-    author: str | None,
+    new_title,
+    status,
+    author,
 ) -> None:
     if new_title is not None:
         updated_fields["title"] = new_title
@@ -51,12 +50,12 @@ def _record_meta_changes(
 
 
 def _apply_metadata_update(
-    conn: sqlite3.Connection,
-    series_id: int,
+    conn,
+    series_id,
     *,
-    new_title: str | None,
-    status: str | None,
-    author: str | None,
+    new_title,
+    status,
+    author,
 ) -> None:
     try:
         update_series(
@@ -71,13 +70,13 @@ def _apply_metadata_update(
 
 
 def _apply_tag_changes(
-    conn: sqlite3.Connection,
-    series_id: int,
-    add_tags: list[str],
-    remove_tags: list[str],
+    conn,
+    series_id,
+    add_tags,
+    remove_tags,
 ) -> tuple[list[str], list[str]]:
-    added_tags: list[str] = []
-    removed_tags: list[str] = []
+    added_tags = []
+    removed_tags = []
 
     for tag in add_tags:
         if add_tag_to_series(conn, series_id, tag):
@@ -107,8 +106,8 @@ def register(app: typer.Typer) -> None:
         """
         _validate_status(status)
 
-        db_path: Path = resolve_db_path(ctx.obj["db"])
-        updated_fields: dict[str, object] = {}
+        db_path = resolve_db_path(ctx.obj["db"])
+        updated_fields = {}
 
         with connect(db_path) as conn:
             series_id = resolve_or_exit(

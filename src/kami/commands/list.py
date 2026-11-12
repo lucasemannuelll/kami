@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import typer
 
 from kami.commands.add import STATUS_CHOICES, TYPE_CHOICES
@@ -38,7 +36,7 @@ def register(app: typer.Typer) -> None:
                 param_hint="--type",
             )
 
-        db_path: Path = resolve_db_path(ctx.obj["db"])
+        db_path = resolve_db_path(ctx.obj["db"])
         with connect(db_path) as conn:
             summaries = list_series(
                 conn, status=status, series_type=series_type, tags=tags

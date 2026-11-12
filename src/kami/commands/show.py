@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 
 import typer
 
@@ -19,7 +18,7 @@ def register(app: typer.Typer) -> None:
         ),
     ) -> None:
         """Print a series' metadata and its 3 most recent chapters."""
-        db_path: Path = resolve_db_path(ctx.obj["db"])
+        db_path = resolve_db_path(ctx.obj["db"])
         with connect(db_path) as conn:
             series_id = resolve_or_exit(conn, query, json_mode=ctx.obj["json"])
             detail = get_series_detail(conn, series_id)

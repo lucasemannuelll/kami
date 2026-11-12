@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sqlite3
-from pathlib import Path
 
 import typer
 
@@ -11,14 +10,14 @@ from kami.db import connect
 from kami.formatting import console, emit
 from kami.repo import add_series
 
-TYPE_CHOICES: list[str] = [
+TYPE_CHOICES = [
     "Manga",
     "Manhwa",
     "Manhua",
     "Novel",
     "Comic",
 ]
-STATUS_CHOICES: list[str] = [
+STATUS_CHOICES = [
     "Reading",
     "Completed",
     "On Hold",
@@ -27,9 +26,9 @@ STATUS_CHOICES: list[str] = [
 
 
 def _validate_choice(
-    value: str,
-    choices: list[str],
-    flag: str,
+    value,
+    choices,
+    flag,
 ) -> None:
     if value not in choices:
         raise typer.BadParameter(
@@ -69,7 +68,7 @@ def register(app: typer.Typer) -> None:
             except DateParseError as e:
                 raise typer.BadParameter(str(e), param_hint="--started") from e
 
-        db_path: Path = resolve_db_path(ctx.obj["db"])
+        db_path = resolve_db_path(ctx.obj["db"])
 
         with connect(db_path) as conn:
             try:

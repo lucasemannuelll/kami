@@ -13,19 +13,19 @@ from kami.repo import chapter_exists, unlog_chapters
 _CONFIRM_THRESHOLD = 10
 
 
-def _parse_spec(chapter_spec: str) -> list[str]:
+def _parse_spec(chapter_spec) -> list[str]:
     try:
         return parse_chapter_spec(chapter_spec)
     except ChapterSpecError as e:
         raise typer.BadParameter(str(e), param_hint="SPEC") from e
 
 
-def _filter_existing(conn, series_id: int, chapters: list[str]) -> list[str]:
+def _filter_existing(conn, series_id, chapters) -> list[str]:
     return [ch for ch in chapters if chapter_exists(conn, series_id, ch)[0]]
 
 
 def _report_dry_run(
-    chapters: list[str], json_mode: bool
+    chapters, json_mode
 ) -> None:
     if json_mode:
         import json
@@ -43,7 +43,7 @@ def _report_dry_run(
     )
 
 
-def _confirm_or_exit(chapter_count: int) -> None:
+def _confirm_or_exit(chapter_count) -> None:
     if not sys.stdin.isatty():
         console.print(
             f"[red]error:[/] refusing to delete {chapter_count} "
