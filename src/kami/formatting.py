@@ -6,7 +6,6 @@ from typing import Any
 from rich.console import Console
 from rich.table import Table
 
-from kami.models import SeriesDetail, SeriesSummary
 from kami.resolve import Ambiguous, NotFound
 
 console = Console(stderr=False)
