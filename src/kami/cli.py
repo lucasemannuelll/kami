@@ -15,6 +15,7 @@ app = typer.Typer(
     add_completion=False,
 )
 
+
 @app.callback()
 def root(
     ctx: typer.Context,
@@ -28,11 +29,7 @@ def root(
         False, "--verbose", "-v", help="Print debug info (SQL, exec commands)"
     ),
 ) -> None:
-    ctx.obj = {
-        "db": db, 
-        "json": json_mode, 
-        "verbose": verbose
-    }
+    ctx.obj = {"db": db, "json": json_mode, "verbose": verbose}
 
 
 def _register_commands() -> None:

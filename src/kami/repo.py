@@ -3,9 +3,7 @@ from __future__ import annotations
 from kami.models import Chapter, Series, SeriesDetail, SeriesSummary
 
 
-def _set_tags(
-    conn, series_id, tags
-) -> None:
+def _set_tags(conn, series_id, tags) -> None:
     for tag in tags:
         add_tag_to_series(conn, series_id, tag)
 
@@ -36,14 +34,7 @@ def _tags_for(conn, series_id) -> tuple[str, ...]:
 
 
 def add_series(
-    conn,
-    *,
-    title,
-    series_type,
-    author,
-    status,
-    started_at,
-    tags,
+    conn, *, title, series_type, author, status, started_at, tags
 ) -> int:
     cursor = conn.cursor()
     cursor.execute(
@@ -60,14 +51,7 @@ def add_series(
     return series_id
 
 
-def update_series(
-    conn,
-    series_id,
-    *,
-    title,
-    author,
-    status,
-) -> None:
+def update_series(conn, series_id, *, title, author, status) -> None:
     set_clauses = []
     query_params = []
 
@@ -91,9 +75,7 @@ def update_series(
     )
 
 
-def add_tag_to_series(
-    conn, series_id, tag
-) -> bool:
+def add_tag_to_series(conn, series_id, tag) -> bool:
     tag_id = _ensure_tag(conn, tag)
     cursor = conn.cursor()
 
@@ -105,9 +87,7 @@ def add_tag_to_series(
     return cursor.rowcount > 0
 
 
-def remove_tag_from_series(
-    conn, series_id, tag
-) -> bool:
+def remove_tag_from_series(conn, series_id, tag) -> bool:
     cursor = conn.cursor()
 
     cursor.execute(
@@ -125,12 +105,7 @@ def remove_series(conn, series_id) -> None:
     cursor.execute("DELETE FROM series WHERE id = ?", (series_id,))
 
 
-def log_chapters(
-    conn,
-    series_id,
-    chapters,
-    read_date,
-) -> int:
+def log_chapters(conn, series_id, chapters, read_date) -> int:
     cursor = conn.cursor()
     cursor.executemany(
         "INSERT INTO chapters (series_id, chapter, read_date) "
@@ -142,11 +117,7 @@ def log_chapters(
     return len(chapters)
 
 
-def unlog_chapters(
-    conn,
-    series_id,
-    chapters,
-) -> int:
+def unlog_chapters(conn, series_id, chapters) -> int:
     cursor = conn.cursor()
 
     cursor.executemany(
@@ -181,11 +152,7 @@ def get_series(conn, series_id) -> Series | None:
 
 
 def list_series(
-    conn,
-    *,
-    status = None,
-    series_type = None,
-    tags = None,
+    conn, *, status=None, series_type=None, tags=None
 ) -> list[SeriesSummary]:
     filters = []
     query_params = []
@@ -242,9 +209,7 @@ def list_series(
     ]
 
 
-def get_series_detail(
-    conn, series_id
-) -> SeriesDetail | None:
+def get_series_detail(conn, series_id) -> SeriesDetail | None:
 
     series = get_series(conn, series_id)
     if series is None:
@@ -279,21 +244,18 @@ def get_series_detail(
     )
 
     return SeriesDetail(
-        series=series, chapters_read=chapters_read, last_chapters=last_chapters
+        series=series,
+        chapters_read=chapters_read,
+        last_chapters=last_chapters
     )
 
 
-def chapter_exists(
-    conn, series_id, chapter
-) -> tuple[bool, str | None]:
+def chapter_exists(conn, series_id, chapter) -> tuple[bool, str | None]:
     cursor = conn.cursor()
 
     chapter_record = cursor.execute(
         "SELECT read_date FROM chapters WHERE series_id = ? AND chapter = ?",
-        (
-            series_id,
-            chapter,
-        ),
+        (series_id, chapter),
     ).fetchone()
     if chapter_record is None:
         return (False, None)

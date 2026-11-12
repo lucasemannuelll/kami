@@ -29,9 +29,7 @@ class NotFound:
 Resolution = Resolved | Ambiguous | NotFound
 
 
-def _fetch(
-    conn, sql_query, params
-) -> list[SeriesRow]:
+def _fetch(conn, sql_query, params) -> list[SeriesRow]:
     series_records = conn.execute(sql_query, params).fetchall()
 
     return [

@@ -25,7 +25,9 @@ def _expand_range(start_str, end_str) -> list[str]:
         raise ChapterSpecError(f"invalid: {start_str!r}-{end_str!r}") from e
 
     if range_start > range_end:
-        raise ChapterSpecError(f"start higher than end: {start_str}-{end_str}")
+        raise ChapterSpecError(
+            f"start higher than end: {start_str}-{end_str}"
+        )
 
     both_are_integer = (
         range_start == range_start.to_integral_value()

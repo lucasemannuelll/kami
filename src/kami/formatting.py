@@ -43,10 +43,10 @@ def _detail_to_dict(detail) -> dict[str, Any]:
         "started": series.started_at,
         "tags": list(series.tags),
         "chapters_read": detail.chapters_read,
-        "last_chapters": [
-            {"chapter": chapter.chapter, "read_date": chapter.read_date}
-            for chapter in detail.last_chapters
-        ],
+        "last_chapters": [{
+            "chapter": chapter.chapter, 
+            "read_date": chapter.read_date
+            } for chapter in detail.last_chapters],
     }
 
 
@@ -71,7 +71,9 @@ def human_tags(tags) -> str:
 
 def render_list(summaries, *, json_mode) -> None:
     if json_mode:
-        print(json.dumps([_summary_to_dict(summary) for summary in summaries]))
+        print(
+            json.dumps([_summary_to_dict(summary) for summary in summaries])
+        )
         return
 
     if not summaries:
@@ -126,12 +128,7 @@ def render_show(detail, *, json_mode) -> None:
 
 
 def render_log_results(
-    *,
-    title,
-    chapters,
-    read_date,
-    json_mode,
-    dry_run,
+    *, title, chapters, read_date, json_mode, dry_run
 ) -> None:
     log_result = {
         "series": title,
@@ -146,18 +143,12 @@ def render_log_results(
     action_prefix = "Would log " if dry_run else "Logged"
     chapter_word = "chapter" if len(chapters) == 1 else "chapters"
     console.print(
-        f"{action_prefix} {len(chapters)} {chapter_word} "
-        f"for [bold]{title}[/]".strip()
+        f"{action_prefix} {len(chapters)} "
+        f"{chapter_word} for [bold]{title}[/]".strip()
     )
 
 
-def render_unlog_result(
-    *,
-    title,
-    chapters,
-    json_mode,
-    dry_run,
-) -> None:
+def render_unlog_result(*, title, chapters, json_mode, dry_run) -> None:
     if json_mode:
         print(json.dumps({
             "series": title,
@@ -171,26 +162,17 @@ def render_unlog_result(
     )
 
 
-def render_ambiguous(
-    query, candidates, *, json_mode
-) -> None:
+def render_ambiguous(query, candidates, *, json_mode) -> None:
     if json_mode:
-        print(
-            json.dumps(
-                {
-                    "error": "ambiguous",
-                    "query": query,
-                    "candidates": [
-                        {
-                            "id": candidate.id,
-                            "title": candidate.title,
-                            "series_type": candidate.series_type,
-                        }
-                        for candidate in candidates
-                    ],
-                }
-            )
-        )
+        print(json.dumps({
+            "error": "ambiguous",
+            "query": query,
+            "candidates": [{
+                "id": candidate.id,
+                "title": candidate.title,
+                "series_type": candidate.series_type,
+            } for candidate in candidates],
+        }))
         return
     error_console.print(f"[red]error:[/] {query!r} matches multiple series: ")
     for candidate in candidates:
