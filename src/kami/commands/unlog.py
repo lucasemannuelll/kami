@@ -24,17 +24,14 @@ def _filter_existing(conn, series_id, chapters) -> list[str]:
     return [ch for ch in chapters if chapter_exists(conn, series_id, ch)[0]]
 
 
-def _report_dry_run(
-    chapters, json_mode
-) -> None:
+def _report_dry_run(chapters, json_mode) -> None:
     if json_mode:
         import json
 
         print(json.dumps({
-                "dry_run": True,
-                "chapters": chapters,
-            })
-        )
+            "dry_run": True,
+            "chapters": chapters,
+        }))
         return
 
     console.print(
@@ -83,10 +80,8 @@ def register(app: typer.Typer) -> None:
 
         with connect(db_path) as conn:
             series_id = resolve_or_exit(
-                conn,
-                query,
-                json_mode=ctx.obj["json"],
-            )
+                conn, query, json_mode=ctx.obj["json"]
+            ) 
 
             matched = _filter_existing(conn, series_id, chapters)
             if not matched:

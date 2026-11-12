@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sqlite3
+from typing import Annotated
 
 import typer
 
@@ -17,6 +18,7 @@ def _summarize(updated_fields) -> str:
     for field_name in ("title", "status", "author"):
         if field_name in updated_fields:
             summary_parts.append(f"{field_name}={updated_fields[field_name]}")
+    
     if "tags_added" in updated_fields:
         summary_parts.append(f"+{','.join(updated_fields['tags_added'])}")
     if "tags_removed" in updated_fields:
@@ -35,11 +37,7 @@ def _validate_status(status) -> None:
 
 
 def _record_meta_changes(
-    updated_fields,
-    *,
-    new_title,
-    status,
-    author,
+    updated_fields, *, new_title, status, author,
 ) -> None:
     if new_title is not None:
         updated_fields["title"] = new_title
@@ -50,12 +48,7 @@ def _record_meta_changes(
 
 
 def _apply_metadata_update(
-    conn,
-    series_id,
-    *,
-    new_title,
-    status,
-    author,
+    conn, series_id, *, new_title, status, author
 ) -> None:
     try:
         update_series(
@@ -70,10 +63,7 @@ def _apply_metadata_update(
 
 
 def _apply_tag_changes(
-    conn,
-    series_id,
-    add_tags,
-    remove_tags,
+    conn, series_id, add_tags, remove_tags,
 ) -> tuple[list[str], list[str]]:
     added_tags = []
     removed_tags = []
@@ -98,8 +88,8 @@ def register(app: typer.Typer) -> None:
         new_title: str | None = typer.Option(None, "--title"),
         status: str | None = typer.Option(None, "--status", "-s"),
         author: str | None = typer.Option(None, "--author", "-a"),
-        add_tags: list[str] = typer.Option([], "--add-tags"),
-        remove_tags: list[str] = typer.Option([], "--remove-tags"),
+        add_tags: Annotated[list[str], typer.Option("--add-tags")] = [],
+        remove_tags: Annotated[list[str], typer.Option("--remove-tags")] = [],
     ) -> None:
         """
         Rename, change status/author, or add/remove tags on a resolved series.
@@ -111,9 +101,7 @@ def register(app: typer.Typer) -> None:
 
         with connect(db_path) as conn:
             series_id = resolve_or_exit(
-                conn,
-                query,
-                json_mode=ctx.obj["json"],
+                conn, query, json_mode=ctx.obj["json"]
             )
 
             _apply_metadata_update(

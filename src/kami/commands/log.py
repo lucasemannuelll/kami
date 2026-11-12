@@ -10,9 +10,7 @@ from kami.formatting import console, render_log_results, resolve_or_exit
 from kami.repo import chapter_exists, log_chapters
 
 
-def _report_dry_run(
-    conn, series_id, chapters, read_date, json_mode
-) -> None:
+def _report_dry_run(conn, series_id, chapters, read_date, json_mode) -> None:
     new = []
     update = []
 
@@ -23,16 +21,13 @@ def _report_dry_run(
     if json_mode:
         import json
 
-        print(
-            json.dumps(
-                {
-                    "dry_run": True,
-                    "new": new,
-                    "update": update,
-                    "read_date": read_date,
-                }
-            )
-        )
+        print(json.dumps({
+            "dry_run": True,
+            "new": new,
+            "update": update,
+            "read_date": read_date,
+        }))
+
         return
 
     if new:
@@ -90,7 +85,9 @@ def register(app: typer.Typer) -> None:
         db_path = resolve_db_path(ctx.obj["db"])
 
         with connect(db_path) as conn:
-            series_id = resolve_or_exit(conn, query, json_mode=ctx.obj["json"])
+            series_id = resolve_or_exit(
+                conn, query, json_mode=ctx.obj["json"]
+            )
 
             if dry_run:
                 _report_dry_run(
@@ -98,12 +95,7 @@ def register(app: typer.Typer) -> None:
                 )
                 return
 
-            log_chapters(
-                conn,
-                series_id,
-                chapters,
-                read_date,
-            )
+            log_chapters(conn, series_id, chapters, read_date)
 
         render_log_results(
             title=query,
