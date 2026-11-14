@@ -51,9 +51,9 @@ def register(app: typer.Typer) -> None:
         ),
         author: str | None = typer.Option(None, "--author", "-a"),
         status: str = typer.Option("Reading", "--status", "-s"),
-        tags: Annotated[list[str], typer.Option(
-            "--tag", help="Repeatable"
-        )] = [],
+        tags: Annotated[
+            list[str], typer.Option("--tag", help="Repeatable")
+        ] = [],
         started_at: str | None = typer.Option(
             None, "--started", help="YYYY-MM-DD, or 'pre-catalog'"
         ),

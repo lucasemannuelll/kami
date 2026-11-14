@@ -23,6 +23,7 @@ def register(app: typer.Typer) -> None:
             series_id = resolve_or_exit(
                 conn, query, json_mode=ctx.obj["json"]
             )
+            
             detail = get_series_detail(conn, series_id)
 
             assert detail is not None

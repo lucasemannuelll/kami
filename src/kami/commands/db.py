@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import shutil
 import subprocess
 import sys
@@ -23,17 +24,11 @@ def register(app: typer.Typer) -> None:
         exists = db_path.exists()
 
         if ctx.obj["json"]:
-            import json
-
-            print(
-                json.dumps(
-                    {
-                        "path": str(db_path),
-                        "exists": exists,
-                        "size": db_path.stat().st_size if exists else None,
-                    }
-                )
-            )
+            print(json.dumps({
+                "path": str(db_path),
+                "exists": exists,
+                "size": db_path.stat().st_size if exists else None,
+            }))
         else:
             print(str(db_path))
 

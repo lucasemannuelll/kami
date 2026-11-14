@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 
 import typer
@@ -26,8 +27,6 @@ def _filter_existing(conn, series_id, chapters) -> list[str]:
 
 def _report_dry_run(chapters, json_mode) -> None:
     if json_mode:
-        import json
-
         print(json.dumps({
             "dry_run": True,
             "chapters": chapters,

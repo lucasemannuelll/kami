@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import typer
 
 from kami.chapters import ChapterSpecError, parse_chapter_spec
@@ -19,7 +20,6 @@ def _report_dry_run(conn, series_id, chapters, read_date, json_mode) -> None:
         (update if exists else new).append(ch)
 
     if json_mode:
-        import json
 
         print(json.dumps({
             "dry_run": True,
@@ -34,6 +34,7 @@ def _report_dry_run(conn, series_id, chapters, read_date, json_mode) -> None:
         console.print(f"New:    {', '.join(new)}")
     if update:
         console.print(f"Update: {', '.join(update)}")
+    
     if not new and not update:
         console.print("[dim]Nothing to do[/]")
     else:
