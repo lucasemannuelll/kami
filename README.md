@@ -20,6 +20,9 @@ A minimal reading ledger for manga, manhwa, manhua, web novels, comics, and more
 ---
 
 ## Installation
+
+Requires **Python ≥ 3.10**.
+
 Start by cloning the repository and moving into it — the installer commands
 below assume you're inside the repo directory:
 
@@ -107,11 +110,7 @@ If `kami` is not found, make sure the user script directory is on your `PATH`:
 
 ### Verify the install
 
-Regardless of which option you used:
-
 ```bash
-kami --version
-# or
 kami --help
 ```
 
@@ -124,6 +123,7 @@ uv tool uninstall kami       # if installed with uv
 pipx uninstall kami          # if installed with pipx
 pip uninstall kami           # if installed with pip
 ```
+
 ---
 
 ## Quick start
@@ -277,17 +277,22 @@ A `--dry-run` reports which chapters would be newly added versus updated, withou
 
 ### `kami unlog`
 
-The inverse of `log`. By default, clears the read date (`read_date = NULL`); with `--delete`, removes chapter rows entirely.
+The inverse of `log`. Removes chapter rows entirely — useful for undoing accidental logging.
 
 ```bash
-kami unlog QUERY SPEC [--delete] [--yes] [--dry-run]
+kami unlog QUERY SPEC [--yes] [--dry-run]
 ```
 
-- `--delete` — delete rows entirely
 - `--yes`, `-y` — skip confirmation
-- `--dry-run` — show what would happen
+- `--dry-run` — show which chapters would be removed, without writing
 
-Deleting 10 or more chapters requires confirmation, and in non-interactive contexts requires `--yes`.
+Removing 10 or more chapters requires confirmation, and in non-interactive contexts (e.g. scripts, pipes) requires `--yes`.
+
+```bash
+kami unlog Frieren 11
+kami unlog Frieren 12-15 --dry-run
+kami unlog Frieren 12-20 --yes
+```
 
 ---
 

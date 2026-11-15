@@ -57,7 +57,7 @@ def _confirm_or_exit(chapter_count) -> None:
 
 
 def register(app: typer.Typer) -> None:
-    @app.command("unlog", help="Clear read dates or delete chapter rows.")
+    @app.command("unlog", help="Delete chapter rows.")
     def unlog_cmd(
         ctx: typer.Context,
         query: str = typer.Argument(
