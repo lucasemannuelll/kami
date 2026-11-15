@@ -71,9 +71,7 @@ def register(app: typer.Typer) -> None:
             try:
                 parse_date(started_at)
             except DateParseError as e:
-                raise typer.BadParameter(
-                    str(e), param_hint="--started"
-                ) from e
+                raise typer.BadParameter(str(e), param_hint="--started") from e
 
         db_path = resolve_db_path(ctx.obj["db"])
 
@@ -90,8 +88,7 @@ def register(app: typer.Typer) -> None:
                 )
             except sqlite3.IntegrityError:
                 console.print(
-                    f"[red]error:[/] series {title!r} - "
-                    f"[{series_type}] already exists"
+                    f"[red]error:[/] series {title!r} - [{series_type}] already exists"
                 )
                 raise typer.Exit(code=1) from None
 

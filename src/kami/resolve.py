@@ -54,8 +54,7 @@ def resolve_series(conn, search_query) -> Resolution:
 
     exact_matches = _fetch(
         conn,
-        "SELECT id, title, series_type "
-        "FROM series WHERE title = ? COLLATE NOCASE",
+        "SELECT id, title, series_type FROM series WHERE title = ? COLLATE NOCASE",
         (cleaned_query,),
     )
 

@@ -27,16 +27,17 @@ def _filter_existing(conn, series_id, chapters) -> list[str]:
 
 def _report_dry_run(chapters, json_mode) -> None:
     if json_mode:
-        print(json.dumps({
-            "dry_run": True,
-            "chapters": chapters,
-        }))
+        print(
+            json.dumps(
+                {
+                    "dry_run": True,
+                    "chapters": chapters,
+                }
+            )
+        )
         return
 
-    console.print(
-        f"Would {len(chapters)} chapter(s): "
-        f"{', '.join(chapters)}"
-    )
+    console.print(f"Would {len(chapters)} chapter(s): {', '.join(chapters)}")
 
 
 def _confirm_or_exit(chapter_count) -> None:
@@ -65,12 +66,8 @@ def register(app: typer.Typer) -> None:
             help="Series title (or unique prefix)",
         ),
         spec: str = typer.Argument(..., help="Chapter spec"),
-        yes: bool = typer.Option(
-            False, "--yes", "-y", help="Skip confirmation"
-        ),
-        dry_run: bool = typer.Option(
-            False, "--dry-run", help="Show what would change"
-        ),
+        yes: bool = typer.Option(False, "--yes", "-y", help="Skip confirmation"),
+        dry_run: bool = typer.Option(False, "--dry-run", help="Show what would change"),
     ) -> None:
         """Remove chapter rows for a series (undo accidental logging)."""
         chapters = _parse_spec(spec)
@@ -78,9 +75,7 @@ def register(app: typer.Typer) -> None:
         db_path = resolve_db_path(ctx.obj["db"])
 
         with connect(db_path) as conn:
-            series_id = resolve_or_exit(
-                conn, query, json_mode=ctx.obj["json"]
-            ) 
+            series_id = resolve_or_exit(conn, query, json_mode=ctx.obj["json"])
 
             matched = _filter_existing(conn, series_id, chapters)
             if not matched:

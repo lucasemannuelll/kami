@@ -39,12 +39,8 @@ def register(app: typer.Typer) -> None:
     @app.command("rm", help="Delete a series and its chapters.")
     def rm_cmd(
         ctx: typer.Context,
-        query: str = typer.Argument(
-            ..., help="Series title (or unique prefix)"
-        ),
-        yes: bool = typer.Option(
-            False, "--yes", "-y", help="Skip confirmation"
-        ),
+        query: str = typer.Argument(..., help="Series title (or unique prefix)"),
+        yes: bool = typer.Option(False, "--yes", "-y", help="Skip confirmation"),
     ) -> None:
         """
         Remove a series (and cascade its chapters/tags links).
@@ -52,9 +48,7 @@ def register(app: typer.Typer) -> None:
         """
         db_path = resolve_db_path(ctx.obj["db"])
         with connect(db_path) as conn:
-            series_id = resolve_or_exit(
-                conn, query, json_mode=ctx.obj["json"]
-            )
+            series_id = resolve_or_exit(conn, query, json_mode=ctx.obj["json"])
             detail = get_series_detail(conn, series_id)
 
             assert detail is not None

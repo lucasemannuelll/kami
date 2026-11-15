@@ -27,14 +27,12 @@ def register(app: typer.Typer) -> None:
         """
         if status is not None and status not in STATUS_CHOICES:
             raise typer.BadParameter(
-                f"invalid status {status!r}; "
-                f"choose from {', '.join(STATUS_CHOICES)}",
+                f"invalid status {status!r}; choose from {', '.join(STATUS_CHOICES)}",
                 param_hint="--status",
             )
         if series_type is not None and series_type not in TYPE_CHOICES:
             raise typer.BadParameter(
-                f"invalid type {series_type!r}; "
-                f"choose from {', '.join(TYPE_CHOICES)}",
+                f"invalid type {series_type!r}; choose from {', '.join(TYPE_CHOICES)}",
                 param_hint="--type",
             )
 

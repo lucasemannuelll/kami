@@ -16,9 +16,7 @@ class DatabaseNotInitialized(KamiError):
 
 def connect(db_path) -> sqlite3.Connection:
     if not db_path.exists():
-        raise DatabaseNotInitialized(
-            f"db not found at {db_path}. Run 'kami init'"
-        )
+        raise DatabaseNotInitialized(f"db not found at {db_path}. Run 'kami init'")
 
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
@@ -38,9 +36,7 @@ def init_schema(db_path) -> bool:
         cursor.row_factory = sqlite3.Row
         cursor.execute("PRAGMA foreign_keys = ON")
 
-        schema_sql = (
-            files("kami").joinpath("schema.sql").read_text(encoding="utf-8")
-        )
+        schema_sql = files("kami").joinpath("schema.sql").read_text(encoding="utf-8")
         cursor.executescript(schema_sql)
 
         conn.commit()

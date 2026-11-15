@@ -24,17 +24,19 @@ def register(app: typer.Typer) -> None:
         exists = db_path.exists()
 
         if ctx.obj["json"]:
-            print(json.dumps({
-                "path": str(db_path),
-                "exists": exists,
-                "size": db_path.stat().st_size if exists else None,
-            }))
+            print(
+                json.dumps(
+                    {
+                        "path": str(db_path),
+                        "exists": exists,
+                        "size": db_path.stat().st_size if exists else None,
+                    }
+                )
+            )
         else:
             print(str(db_path))
 
-    @db_app.command(
-        "shell", help="Open an interactive sqlite3 shell on the DB."
-    )
+    @db_app.command("shell", help="Open an interactive sqlite3 shell on the DB.")
     def db_shell_cmd(ctx: typer.Context) -> None:
         """
         Run sqlite3 with .headers on / .mode box;

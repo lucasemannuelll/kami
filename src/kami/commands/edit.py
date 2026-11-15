@@ -30,14 +30,17 @@ def _summarize(updated_fields) -> str:
 def _validate_status(status) -> None:
     if status is not None and status not in STATUS_CHOICES:
         raise typer.BadParameter(
-            f"invalid status {status!r}; "
-            f"choose from {', '.join(STATUS_CHOICES)}",
+            f"invalid status {status!r}; choose from {', '.join(STATUS_CHOICES)}",
             param_hint="--status",
         )
 
 
 def _record_meta_changes(
-    updated_fields, *, new_title, status, author,
+    updated_fields,
+    *,
+    new_title,
+    status,
+    author,
 ) -> None:
     if new_title is not None:
         updated_fields["title"] = new_title
@@ -47,13 +50,9 @@ def _record_meta_changes(
         updated_fields["author"] = author
 
 
-def _apply_metadata_update(
-    conn, series_id, *, new_title, status, author
-) -> None:
+def _apply_metadata_update(conn, series_id, *, new_title, status, author) -> None:
     try:
-        update_series(
-            conn, series_id, title=new_title, status=status, author=author
-        )
+        update_series(conn, series_id, title=new_title, status=status, author=author)
     except sqlite3.IntegrityError:
         console.print(
             f"[red]error:[/red] cannot rename to {new_title!r}: "
@@ -63,7 +62,10 @@ def _apply_metadata_update(
 
 
 def _apply_tag_changes(
-    conn, series_id, add_tags, remove_tags,
+    conn,
+    series_id,
+    add_tags,
+    remove_tags,
 ) -> tuple[list[str], list[str]]:
     added_tags = []
     removed_tags = []
@@ -82,18 +84,12 @@ def register(app: typer.Typer) -> None:
     @app.command("edit", help="Edit a series' metadata or tags.")
     def edit_cmd(
         ctx: typer.Context,
-        query: str = typer.Argument(
-            ..., help="Series title (or unique prefix)"
-        ),
+        query: str = typer.Argument(..., help="Series title (or unique prefix)"),
         new_title: str | None = typer.Option(None, "--title"),
         status: str | None = typer.Option(None, "--status", "-s"),
         author: str | None = typer.Option(None, "--author", "-a"),
-        add_tags: Annotated[
-            list[str] | None, typer.Option("--add-tags")
-        ] = None,
-        remove_tags: Annotated[
-            list[str] | None, typer.Option("--remove-tags")
-        ] = None,
+        add_tags: Annotated[list[str] | None, typer.Option("--add-tags")] = None,
+        remove_tags: Annotated[list[str] | None, typer.Option("--remove-tags")] = None,
     ) -> None:
         """
         Rename, change status/author, or add/remove tags on a resolved series.
@@ -108,9 +104,7 @@ def register(app: typer.Typer) -> None:
         updated_fields = {}
 
         with connect(db_path) as conn:
-            series_id = resolve_or_exit(
-                conn, query, json_mode=ctx.obj["json"]
-            )
+            series_id = resolve_or_exit(conn, query, json_mode=ctx.obj["json"])
 
             _apply_metadata_update(
                 conn,

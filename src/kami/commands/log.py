@@ -21,13 +21,16 @@ def _report_dry_run(conn, series_id, chapters, read_date, json_mode) -> None:
         (update if exists else new).append(ch)
 
     if json_mode:
-
-        print(json.dumps({
-            "dry_run": True,
-            "new": new,
-            "update": update,
-            "read_date": read_date,
-        }))
+        print(
+            json.dumps(
+                {
+                    "dry_run": True,
+                    "new": new,
+                    "update": update,
+                    "read_date": read_date,
+                }
+            )
+        )
 
         return
 
@@ -35,13 +38,11 @@ def _report_dry_run(conn, series_id, chapters, read_date, json_mode) -> None:
         console.print(f"New:    {', '.join(new)}")
     if update:
         console.print(f"Update: {', '.join(update)}")
-    
+
     if not new and not update:
         console.print("[dim]Nothing to do[/]")
     else:
-        console.print(
-            f"[dim]Would log {len(chapters)} chapter(s) on {read_date}.[/]"
-        )
+        console.print(f"[dim]Would log {len(chapters)} chapter(s) on {read_date}.[/]")
 
 
 def _resolve_date(date_input) -> str:
@@ -64,18 +65,18 @@ def register(app: typer.Typer) -> None:
     @app.command("log", help="Record chapters as read.")
     def log_cmd(
         ctx: typer.Context,
-        query: str = typer.Argument(
-            ..., help="Series title (or unique prefix)"
-        ),
+        query: str = typer.Argument(..., help="Series title (or unique prefix)"),
         spec: str = typer.Argument(
-            ..., help="Chapter spec: '213', '218-225', '12.1,12.2,13'",
+            ...,
+            help="Chapter spec: '213', '218-225', '12.1,12.2,13'",
         ),
         date: str | None = typer.Option(
-            None, "--date", "-d", help="YYYY-MM-DD (default: today)",
+            None,
+            "--date",
+            "-d",
+            help="YYYY-MM-DD (default: today)",
         ),
-        dry_run: bool = typer.Option(
-            False, "--dry-run", help="Show what would change"
-        ),
+        dry_run: bool = typer.Option(False, "--dry-run", help="Show what would change"),
     ) -> None:
         """
         Log chapters (e.g. '218-225', '12.1,12.2,13') on a date
@@ -87,14 +88,10 @@ def register(app: typer.Typer) -> None:
         db_path = resolve_db_path(ctx.obj["db"])
 
         with connect(db_path) as conn:
-            series_id = resolve_or_exit(
-                conn, query, json_mode=ctx.obj["json"]
-            )
+            series_id = resolve_or_exit(conn, query, json_mode=ctx.obj["json"])
 
             if dry_run:
-                _report_dry_run(
-                    conn, series_id, chapters, read_date, ctx.obj["json"]
-                )
+                _report_dry_run(conn, series_id, chapters, read_date, ctx.obj["json"])
                 return
 
             log_chapters(conn, series_id, chapters, read_date)

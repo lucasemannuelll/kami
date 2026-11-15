@@ -33,9 +33,7 @@ def _tags_for(conn, series_id) -> tuple[str, ...]:
     return tuple(tag_record["name"] for tag_record in tag_records)
 
 
-def add_series(
-    conn, *, title, series_type, author, status, started_at, tags
-) -> int:
+def add_series(conn, *, title, series_type, author, status, started_at, tags) -> int:
     cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO series (title, series_type, author, status, started_at)"
@@ -244,9 +242,7 @@ def get_series_detail(conn, series_id) -> SeriesDetail | None:
     )
 
     return SeriesDetail(
-        series=series,
-        chapters_read=chapters_read,
-        last_chapters=last_chapters
+        series=series, chapters_read=chapters_read, last_chapters=last_chapters
     )
 
 
