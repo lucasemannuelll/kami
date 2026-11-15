@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Annotated
+
 import typer
 
 from kami.commands.add import STATUS_CHOICES, TYPE_CHOICES
@@ -15,9 +17,9 @@ def register(app: typer.Typer) -> None:
         ctx: typer.Context,
         status: str | None = typer.Option(None, "--status", "-s"),
         series_type: str | None = typer.Option(None, "--type", "-t"),
-        tags: list[str] = typer.Option(
-            [], "--tag", help="repeatable; AND semantics"
-        ),
+        tags: Annotated[
+            list[str] | None, typer.Option("--tag", help="repeatable; AND semantics")
+        ] = None,
     ) -> None:
         """
         Show all series.

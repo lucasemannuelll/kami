@@ -18,7 +18,7 @@ def _summarize(updated_fields) -> str:
     for field_name in ("title", "status", "author"):
         if field_name in updated_fields:
             summary_parts.append(f"{field_name}={updated_fields[field_name]}")
-    
+
     if "tags_added" in updated_fields:
         summary_parts.append(f"+{','.join(updated_fields['tags_added'])}")
     if "tags_removed" in updated_fields:
@@ -88,12 +88,20 @@ def register(app: typer.Typer) -> None:
         new_title: str | None = typer.Option(None, "--title"),
         status: str | None = typer.Option(None, "--status", "-s"),
         author: str | None = typer.Option(None, "--author", "-a"),
-        add_tags: Annotated[list[str], typer.Option("--add-tags")] = [],
-        remove_tags: Annotated[list[str], typer.Option("--remove-tags")] = [],
+        add_tags: Annotated[
+            list[str] | None, typer.Option("--add-tags")
+        ] = None,
+        remove_tags: Annotated[
+            list[str] | None, typer.Option("--remove-tags")
+        ] = None,
     ) -> None:
         """
         Rename, change status/author, or add/remove tags on a resolved series.
         """
+        if remove_tags is None:
+            remove_tags = []
+        if add_tags is None:
+            add_tags = []
         _validate_status(status)
 
         db_path = resolve_db_path(ctx.obj["db"])

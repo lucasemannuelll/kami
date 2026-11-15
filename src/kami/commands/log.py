@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+
 import typer
 
 from kami.chapters import ChapterSpecError, parse_chapter_spec

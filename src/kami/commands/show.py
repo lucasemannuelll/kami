@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 import typer
 
 from kami.config import resolve_db_path

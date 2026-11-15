@@ -52,8 +52,8 @@ def register(app: typer.Typer) -> None:
         author: str | None = typer.Option(None, "--author", "-a"),
         status: str = typer.Option("Reading", "--status", "-s"),
         tags: Annotated[
-            list[str], typer.Option("--tag", help="Repeatable")
-        ] = [],
+            list[str] | None, typer.Option("--tag", help="Repeatable")
+        ] = None,
         started_at: str | None = typer.Option(
             None, "--started", help="YYYY-MM-DD, or 'pre-catalog'"
         ),
@@ -62,6 +62,8 @@ def register(app: typer.Typer) -> None:
         Register a new series.
         Available types: Manga, Manhwa, Manhua, Novel, Comic.
         """
+        if tags is None:
+            tags = []
         _validate_choice(series_type, TYPE_CHOICES, "--type")
         _validate_choice(status, STATUS_CHOICES, "--status")
 
