@@ -8,13 +8,13 @@ A minimal reading ledger for manga, manhwa, manhua, web novels, comics, and more
 
 ## Features
 
-- **Series tracking** — title, medium, author, status, start date, and tags
+- **Series tracking** — title, medium, author, status, and the date you started reading
 - **Chapter logging** — log single chapters, ranges, and decimal chapters (`12.1,12.2,13`)
 - **Read dates** — record when you read, or backfill with `--date`
-- **Fuzzy resolution** — refer to a series by any unique prefix; ambiguity is reported clearly
+- **Fuzzy resolution** — refer to a series by any unique substring; ambiguity is reported clearly
 - **Tag filtering** — repeatable `--tag` with AND semantics
-- **Machine-readable** — every command supports `--json`
-- **Dry runs** — see what would change before committing
+- **Machine-readable** — `--json` on all data commands (`init`, `add`, `list`, `show`, `edit`, `rm`, `log`, `unlog`, `db path`); `db shell` is interactive and ignores it
+- **Dry runs** — `--dry-run` on `log` and `unlog`
 - **Inspectable** — open the DB in a preconfigured `sqlite3` shell
 
 ---
@@ -132,8 +132,9 @@ pip uninstall kami           # if installed with pip
 # Create the database and schema
 kami init
 
-# Add a series
-kami add "Frieren" --type Manga --author "Kanehito Yamada" --tag fantasy --tag adventure
+# Add a series (--started = the date you began reading it)
+kami add "Frieren" --type Manga --author "Kanehito Yamada" \
+    --tag fantasy --tag adventure --started 2026-11-01
 
 # Log chapters 1 through 10
 kami log Frieren 1-10
@@ -159,6 +160,9 @@ These apply to every command:
 | `--db PATH`       | Path to the SQLite database (overrides `$KAMI_DB`) |
 | `--json`          | Output machine-readable JSON                       |
 | `--verbose`, `-v` | Print debug info (SQL, exec commands)              |
+
+`--json` applies to all data commands listed in Features. `db shell` is
+interactive and ignores it (pass extra arguments after `db shell` instead).
 
 ---
 
@@ -187,7 +191,7 @@ kami add TITLE --type TYPE [--author AUTHOR] [--status STATUS] [--tag TAG]... [-
 - `--status`, `-s` — one of `Reading`, `Completed`, `On Hold`, `Dropped` (default: `Reading`)
 - `--author`, `-a` — optional author
 - `--tag` — repeatable
-- `--started` — `YYYY-MM-DD` or `pre-catalog`
+- `--started` — the date **you** started reading this series (`YYYY-MM-DD`, or `pre-catalog` if you began before you started using `kami`). This is a personal reading-start date, not the series' publication date.
 
 ```bash
 kami add "Vinland Saga" -t Manga -a "Makoto Yukimura" --tag historical --started 2005-04-01
@@ -221,7 +225,7 @@ Print a series' metadata and its 3 most recent chapters.
 kami show QUERY
 ```
 
-`QUERY` may be the full title or any unique prefix.
+`QUERY` may be the full title or any unique substring of the title.
 
 ---
 
@@ -311,7 +315,7 @@ kami db path --json
 
 #### `kami db shell`
 
-Open an interactive `sqlite3` shell on the database, preconfigured with `.headers on` and `.mode box`. Extra arguments are passed before the DB path.
+Open an interactive `sqlite3` shell on the database, preconfigured with `.headers on` and `.mode box`. Extra arguments are passed before the DB path. `--json` is ignored by this command.
 
 ```bash
 kami db shell
@@ -345,7 +349,7 @@ Duplicates are removed. Ranges must be ascending and numeric.
 
 ## JSON output
 
-Pass `--json` to any command to get structured output instead of human-readable text.
+Pass `--json` to any data command to get structured output instead of human-readable text.
 
 ```bash
 kami list --json
@@ -394,7 +398,7 @@ Errors are also structured in JSON mode:
 | `2`  | Ambiguous query — multiple series matched                     |
 | `3`  | Series not found                                              |
 | `5`  | Database error (missing DB, `sqlite3` binary not found, etc.) |
-| `10` | User declined a destructive confirmation                      |
+| `10` | Destructive confirmation declined, or unavailable in a non-interactive context |
 
 ---
 
@@ -402,7 +406,7 @@ Errors are also structured in JSON mode:
 
 `kami` stores everything in a single SQLite file with four tables:
 
-- **`series`** — id, title, type, author, status, started_at, `UNIQUE(title, series_type)`
+- **`series`** — id, title, type, author, status, `started_at` (the date you began reading the series), `UNIQUE(title, series_type)`
 - **`tags`** — id, name (`COLLATE NOCASE`)
 - **`series_tags`** — many-to-many join, cascading deletes
 - **`chapters`** — id, series_id, chapter, read_date, `UNIQUE(series_id, chapter)`
