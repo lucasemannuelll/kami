@@ -95,7 +95,19 @@ def remove_tag_from_series(conn, series_id, tag) -> bool:
         (series_id, tag),
     )
 
-    return cursor.rowcount > 0
+    removed = cursor.rowcount > 0
+
+    if removed:
+        cursor.execute(
+            """DELETE FROM tags
+               WHERE name = ? COLLATE NOCASE
+               AND NOT EXISTS (
+                   SELECT 1 FROM series_tags st WHERE st.tag_id = tags.id
+               )""",
+            (tag,),
+        )
+
+    return removed
 
 
 def remove_series(conn, series_id) -> None:
