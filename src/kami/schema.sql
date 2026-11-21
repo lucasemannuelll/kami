@@ -43,7 +43,8 @@ CREATE TABLE IF NOT EXISTS series_tags (
 
 CREATE TABLE IF NOT EXISTS chapters (
     id INTEGER PRIMARY KEY,
-    series_id INTEGER NOT NULL,
+    series_id INTEGER NOT NULL
+        REFERENCES series(id) ON DELETE CASCADE,
     chapter TEXT NOT NULL,
     read_date TEXT,
 
