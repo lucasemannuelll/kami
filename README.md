@@ -1,114 +1,112 @@
 # kami
 
-A minimal reading ledger for manga, manhwa, manhua, web novels, comics, and more — a small, fast CLI backed by SQLite.
+Um registro de leitura minimalista para mangás, manhwas, manhuas, web novels, quadrinhos e afins. Uma CLI pequena e rápida, com SQLite por baixo.
 
-`kami` tracks what you're reading, what you've read, and when. It's designed to stay out of your way: one database file, a handful of commands, and `--json` output for scripting.
-
----
-
-## Features
-
-- **Series tracking** — title, medium, author, status, and the date you started reading
-- **Chapter logging** — log single chapters, ranges, and decimal chapters (`12.1,12.2,13`)
-- **Read dates** — record when you read, or backfill with `--date`
-- **Fuzzy resolution** — refer to a series by any unique substring; ambiguity is reported clearly
-- **Tag filtering** — repeatable `--tag` with AND semantics
-- **Machine-readable** — `--json` on all data commands (`init`, `add`, `list`, `show`, `edit`, `rm`, `log`, `unlog`, `db path`); `db shell` is interactive and ignores it
-- **Dry runs** — `--dry-run` on `log` and `unlog`
-- **Inspectable** — open the DB in a preconfigured `sqlite3` shell
+O `kami` acompanha o que você está lendo, o que já leu e quando. Ele foi feito para não atrapalhar: um único arquivo de banco de dados, um punhado de comandos e saída `--json` para usar em scripts.
 
 ---
 
-## Installation
+## Recursos
 
-Requires **Python ≥ 3.10**.
+- **Acompanhamento de séries**: título, tipo, autor, status e a data em que você começou a ler
+- **Registro de capítulos**: registre capítulos avulsos, intervalos e capítulos decimais (`12.1,12.2,13`)
+- **Datas de leitura**: registre quando você leu ou preencha retroativamente com `--date`
+- **Busca aproximada**: refira-se a uma série por qualquer trecho único do título; ambiguidades são informadas de forma clara
+- **Filtro por tags**: `--tag` pode ser repetido, com semântica AND
+- **Saída para máquinas**: `--json` em todos os comandos de dados (`init`, `add`, `list`, `show`, `edit`, `rm`, `log`, `unlog`, `db path`); `db shell` é interativo e ignora essa opção
+- **Simulação**: `--dry-run` em `log` e `unlog`
+- **Inspeção direta**: abra o banco num shell `sqlite3` já configurado
 
-Start by cloning the repository and moving into it — the installer commands
-below assume you're inside the repo directory:
+---
+
+## Instalação
+
+Comece clonando o repositório e entrando nele. Os comandos de instalação
+abaixo assumem que você está dentro do diretório do repositório:
 
 ```bash
 git clone <repository-url>
 cd kami
 ```
 
-### Option 1: `uv` (recommended)
+### Opção 1: `uv` (recomendado)
 
-[`uv`](https://docs.astral.sh/uv/) installs the CLI in an isolated environment and
-links the `kami` executable into `~/.local/bin`.
+O [`uv`](https://docs.astral.sh/uv/) instala a CLI num ambiente isolado e cria um
+link para o executável `kami` em `~/.local/bin`.
 
 ```bash
 uv tool install .
 ```
 
-For development (changes to source are picked up without reinstalling):
+Para desenvolvimento (alterações no código-fonte são aplicadas sem reinstalar):
 
 ```bash
 uv tool install --editable .
 ```
 
-If the `kami` command is not found afterwards, add `~/.local/bin` to your `PATH`:
+Se o comando `kami` não for encontrado depois disso, adicione `~/.local/bin` ao seu `PATH`:
 
 ```bash
 uv tool update-shell
 ```
 
-…then restart your terminal (or source your shell profile).
+…depois reinicie o terminal (ou recarregue o perfil do seu shell).
 
 ---
 
-### Option 2: `pipx`
+### Opção 2: `pipx`
 
-[`pipx`](https://pipx.pypa.io/) creates a dedicated virtual environment for `kami`
-and exposes the executable on your `PATH`.
+O [`pipx`](https://pipx.pypa.io/) cria um ambiente virtual dedicado para o `kami`
+e expõe o executável no seu `PATH`.
 
 ```bash
 pipx install .
 ```
 
-For development:
+Para desenvolvimento:
 
 ```bash
 pipx install --editable .
 ```
 
-If you get a "command not found" error, ensure the pipx bin directory is on your
-`PATH` (usually `~/.local/bin` on Linux/macOS):
+Se aparecer um erro de "command not found", verifique se o diretório de binários do pipx está no seu
+`PATH` (geralmente `~/.local/bin` no Linux/macOS):
 
 ```bash
 pipx ensurepath
 ```
 
-…then restart your terminal.
+…depois reinicie o terminal.
 
 ---
 
-### Option 3: `pip`
+### Opção 3: `pip`
 
-`pip` installs `kami` and its dependencies into your **user site-packages**.
-Use the `--user` flag to avoid modifying system Python.
+O `pip` instala o `kami` e suas dependências no seu **user site-packages**.
+Use a flag `--user` para não alterar o Python do sistema.
 
 ```bash
 pip install --user .
 ```
 
-For development:
+Para desenvolvimento:
 
 ```bash
 pip install --user --editable .
 ```
 
-> Unlike `uv` and `pipx`, `pip` does **not** isolate `kami`'s dependencies.
-> They are shared with any other packages installed in the same environment,
-> which can lead to version conflicts over time. Prefer `uv` or `pipx` unless
-> you're working inside a dedicated virtual environment (e.g. `python -m venv .venv`).
+> Diferente do `uv` e do `pipx`, o `pip` **não** isola as dependências do `kami`.
+> Elas são compartilhadas com quaisquer outros pacotes instalados no mesmo ambiente,
+> o que pode causar conflitos de versão com o tempo. Prefira `uv` ou `pipx`, a menos
+> que você esteja trabalhando dentro de um ambiente virtual dedicado (por exemplo, `python -m venv .venv`).
 
-If `kami` is not found, make sure the user script directory is on your `PATH`:
+Se o `kami` não for encontrado, confira se o diretório de scripts do usuário está no seu `PATH`:
 - **Linux/macOS:** `~/.local/bin`
 - **Windows:** `%APPDATA%\Python\Scripts`
 
 ---
 
-### Verify the install
+### Verificar a instalação
 
 ```bash
 kami --help
@@ -116,61 +114,61 @@ kami --help
 
 ---
 
-### Uninstalling
+### Desinstalar
 
 ```bash
-uv tool uninstall kami       # if installed with uv
-pipx uninstall kami          # if installed with pipx
-pip uninstall kami           # if installed with pip
+uv tool uninstall kami       # se instalou com uv
+pipx uninstall kami          # se instalou com pipx
+pip uninstall kami           # se instalou com pip
 ```
 
 ---
 
-## Quick start
+## Início rápido
 
 ```bash
-# Create the database and schema
+# Cria o banco de dados e o schema
 kami init
 
-# Add a series (--started = the date you began reading it)
+# Adiciona uma série (--started = a data em que você começou a lê-la)
 kami add "Frieren" --type Manga --author "Kanehito Yamada" \
     --tag fantasy --tag adventure --started 2026-11-01
 
-# Log chapters 1 through 10
+# Registra os capítulos 1 a 10
 kami log Frieren 1-10
 
-# Log a specific date
+# Registra uma data específica
 kami log Frieren 11 --date 2026-11-02
 
-# See everything
+# Vê tudo
 kami list
 
-# Show details for one series
+# Mostra os detalhes de uma série
 kami show Frieren
 ```
 
 ---
 
-## Global options
+## Opções globais
 
-These apply to every command:
+Valem para todos os comandos:
 
-| Option            | Description                                        |
+| Opção             | Descrição                                          |
 | ----------------- | -------------------------------------------------- |
-| `--db PATH`       | Path to the SQLite database (overrides `$KAMI_DB`) |
-| `--json`          | Output machine-readable JSON                       |
-| `--verbose`, `-v` | Print debug info (SQL, exec commands)              |
+| `--db PATH`       | Caminho para o banco SQLite (substitui `$KAMI_DB`) |
+| `--json`          | Saída em JSON para máquinas                        |
+| `--verbose`, `-v` | Imprime informações de depuração (SQL, comandos executados) |
 
-`--json` applies to all data commands listed in Features. `db shell` is
-interactive and ignores it (pass extra arguments after `db shell` instead).
+`--json` vale para todos os comandos de dados listados em Recursos. `db shell` é
+interativo e ignora essa opção (passe argumentos extras depois de `db shell`).
 
 ---
 
-## Commands
+## Comandos
 
 ### `kami init`
 
-Create the database and schema (creates parent directories as needed).
+Cria o banco de dados e o schema (cria diretórios pais conforme necessário).
 
 ```bash
 kami init
@@ -181,17 +179,17 @@ kami init --json
 
 ### `kami add`
 
-Add a series to the ledger.
+Adiciona uma série ao registro.
 
 ```bash
 kami add TITLE --type TYPE [--author AUTHOR] [--status STATUS] [--tag TAG]... [--started DATE]
 ```
 
-- `--type`, `-t` — one of `Manga`, `Manhwa`, `Manhua`, `Novel`, `Comic`
-- `--status`, `-s` — one of `Reading`, `Completed`, `On Hold`, `Dropped` (default: `Reading`)
-- `--author`, `-a` — optional author
-- `--tag` — repeatable
-- `--started` — the date **you** started reading this series (`YYYY-MM-DD`, or `pre-catalog` if you began before you started using `kami`). This is a personal reading-start date, not the series' publication date.
+- `--type`, `-t`: um de `Manga`, `Manhwa`, `Manhua`, `Novel`, `Comic`
+- `--status`, `-s`: um de `Reading`, `Completed`, `On Hold`, `Dropped` (padrão: `Reading`)
+- `--author`, `-a`: autor opcional
+- `--tag`: pode ser repetido
+- `--started`: a data em que **você** começou a ler esta série (`YYYY-MM-DD`, ou `pre-catalog` se você começou antes de usar o `kami`). É uma data pessoal de início de leitura, não a data de publicação da série.
 
 ```bash
 kami add "Vinland Saga" -t Manga -a "Makoto Yukimura" --tag historical --started 2005-04-01
@@ -201,13 +199,13 @@ kami add "Vinland Saga" -t Manga -a "Makoto Yukimura" --tag historical --started
 
 ### `kami list`
 
-List series, optionally filtered.
+Lista séries, opcionalmente com filtros.
 
 ```bash
 kami list [--status STATUS] [--type TYPE] [--tag TAG]...
 ```
 
-Filters are combined with AND. Repeating `--tag` requires *all* listed tags.
+Os filtros são combinados com AND. Repetir `--tag` exige *todas* as tags listadas.
 
 ```bash
 kami list --status Reading
@@ -219,19 +217,19 @@ kami list --json
 
 ### `kami show`
 
-Print a series' metadata and its 3 most recent chapters.
+Mostra os metadados de uma série e seus 3 capítulos mais recentes.
 
 ```bash
 kami show QUERY
 ```
 
-`QUERY` may be the full title or any unique substring of the title.
+`QUERY` pode ser o título completo ou qualquer trecho único do título.
 
 ---
 
 ### `kami edit`
 
-Rename, change status/author, or add/remove tags.
+Renomeia, altera status/autor ou adiciona/remove tags.
 
 ```bash
 kami edit QUERY [--title NEW_TITLE] [--status STATUS] [--author AUTHOR] \
@@ -247,25 +245,25 @@ kami edit Frieren --add-tags magic --remove-tags adventure
 
 ### `kami rm`
 
-Remove a series and cascade its chapters/tag links. Prompts unless `--yes`.
+Remove uma série e, em cascata, seus capítulos e vínculos de tags. Pede confirmação, a menos que `--yes` seja usado.
 
 ```bash
 kami rm QUERY [--yes]
 ```
 
-In non-interactive contexts (e.g. scripts, pipes), `--yes` is required.
+Em contextos não interativos (scripts, pipes), `--yes` é obrigatório.
 
 ---
 
 ### `kami log`
 
-Record chapters as read.
+Registra capítulos como lidos.
 
 ```bash
 kami log QUERY SPEC [--date YYYY-MM-DD] [--dry-run]
 ```
 
-`SPEC` supports comma-separated items, ranges, and decimals:
+`SPEC` aceita itens separados por vírgula, intervalos e decimais:
 
 ```bash
 kami log Frieren 12
@@ -275,22 +273,22 @@ kami log Frieren 1-5 --date 2026-10-01
 kami log Frieren 1-5 --dry-run
 ```
 
-A `--dry-run` reports which chapters would be newly added versus updated, without writing.
+Com `--dry-run`, o comando informa quais capítulos seriam adicionados e quais seriam atualizados, sem gravar nada.
 
 ---
 
 ### `kami unlog`
 
-The inverse of `log`. Removes chapter rows entirely — useful for undoing accidental logging.
+O inverso de `log`. Remove as linhas de capítulos por completo. Útil para desfazer registros acidentais.
 
 ```bash
 kami unlog QUERY SPEC [--yes] [--dry-run]
 ```
 
-- `--yes`, `-y` — skip confirmation
-- `--dry-run` — show which chapters would be removed, without writing
+- `--yes`, `-y`: pula a confirmação
+- `--dry-run`: mostra quais capítulos seriam removidos, sem gravar nada
 
-Removing 10 or more chapters requires confirmation, and in non-interactive contexts (e.g. scripts, pipes) requires `--yes`.
+Remover 10 ou mais capítulos exige confirmação e, em contextos não interativos (scripts, pipes), exige `--yes`.
 
 ```bash
 kami unlog Frieren 11
@@ -302,11 +300,11 @@ kami unlog Frieren 12-20 --yes
 
 ### `kami db`
 
-Database maintenance and introspection.
+Manutenção e inspeção do banco de dados.
 
 #### `kami db path`
 
-Print the resolved database path. With `--json`, also reports `exists` and `size`.
+Imprime o caminho resolvido do banco de dados. Com `--json`, também informa `exists` e `size`.
 
 ```bash
 kami db path
@@ -315,7 +313,7 @@ kami db path --json
 
 #### `kami db shell`
 
-Open an interactive `sqlite3` shell on the database, preconfigured with `.headers on` and `.mode box`. Extra arguments are passed before the DB path. `--json` is ignored by this command.
+Abre um shell `sqlite3` interativo no banco de dados, já configurado com `.headers on` e `.mode box`. Argumentos extras são passados antes do caminho do banco. Este comando ignora `--json`.
 
 ```bash
 kami db shell
@@ -323,33 +321,33 @@ kami db shell
 
 ---
 
-## Chapter specs
+## Especificação de capítulos
 
-The `SPEC` argument accepted by `log` and `unlog` supports:
+O argumento `SPEC` aceito por `log` e `unlog` suporta:
 
-| Syntax          | Meaning                            |
-| --------------- | ---------------------------------- |
-| `12`            | Chapter 12                         |
-| `12.1`          | Chapter 12.1 (decimals)            |
-| `12-20`         | Chapters 12 through 20 (inclusive) |
-| `12.1-12.5`     | Decimal range, step `0.1`          |
-| `1-3,5,7.1,7.2` | Comma-separated combination        |
+| Sintaxe         | Significado                              |
+| --------------- | ---------------------------------------- |
+| `12`            | Capítulo 12                              |
+| `12.1`          | Capítulo 12.1 (decimais)                 |
+| `12-20`         | Capítulos 12 a 20 (inclusive)            |
+| `12.1-12.5`     | Intervalo decimal, passo `0.1`           |
+| `1-3,5,7.1,7.2` | Combinação separada por vírgula          |
 
-Duplicates are removed. Ranges must be ascending and numeric.
-
----
-
-## Statuses and types
-
-**Types:** `Manga`, `Manhwa`, `Manhua`, `Novel`, `Comic`
-
-**Statuses:** `Reading`, `Completed`, `On Hold`, `Dropped`
+Duplicatas são removidas. Intervalos precisam ser ascendentes e numéricos.
 
 ---
 
-## JSON output
+## Status e tipos
 
-Pass `--json` to any data command to get structured output instead of human-readable text.
+**Tipos:** `Manga`, `Manhwa`, `Manhua`, `Novel`, `Comic`
+
+**Status:** `Reading`, `Completed`, `On Hold`, `Dropped`
+
+---
+
+## Saída JSON
+
+Passe `--json` para qualquer comando de dados para obter saída estruturada em vez de texto legível.
 
 ```bash
 kami list --json
@@ -370,7 +368,7 @@ kami list --json
 ]
 ```
 
-Errors are also structured in JSON mode:
+Erros também são estruturados no modo JSON:
 
 ```json
 { "error": "not_found", "query": "Frieren" }
@@ -389,29 +387,29 @@ Errors are also structured in JSON mode:
 
 ---
 
-## Exit codes
+## Códigos de saída
 
-| Code | Meaning                                                       |
-| ---- | ------------------------------------------------------------- |
-| `0`  | Success                                                       |
-| `1`  | General error (e.g. duplicate series, invalid rename)         |
-| `2`  | Ambiguous query — multiple series matched                     |
-| `3`  | Series not found                                              |
-| `5`  | Database error (missing DB, `sqlite3` binary not found, etc.) |
-| `10` | Destructive confirmation declined, or unavailable in a non-interactive context |
+| Código | Significado                                                   |
+| ------ | ------------------------------------------------------------- |
+| `0`    | Sucesso                                                       |
+| `1`    | Erro geral (série duplicada, renomeação inválida, etc.)       |
+| `2`    | Consulta ambígua: várias séries corresponderam                |
+| `3`    | Série não encontrada                                          |
+| `5`    | Erro de banco de dados (banco ausente, binário `sqlite3` não encontrado, etc.) |
+| `10`   | Confirmação destrutiva recusada ou indisponível em contexto não interativo |
 
 ---
 
-## Database schema
+## Schema do banco de dados
 
-`kami` stores everything in a single SQLite file with four tables:
+O `kami` armazena tudo num único arquivo SQLite com quatro tabelas:
 
-- **`series`** — id, title, type, author, status, `started_at` (the date you began reading the series), `UNIQUE(title, series_type)`
-- **`tags`** — id, name (`COLLATE NOCASE`)
-- **`series_tags`** — many-to-many join, cascading deletes
-- **`chapters`** — id, series_id, chapter, read_date, `UNIQUE(series_id, chapter)`
+- **`series`**: id, title, type, author, status, `started_at` (a data em que você começou a ler a série), `UNIQUE(title, series_type)`
+- **`tags`**: id, name (`COLLATE NOCASE`)
+- **`series_tags`**: junção muitos-para-muitos, com exclusões em cascata
+- **`chapters`**: id, series_id, chapter, read_date, `UNIQUE(series_id, chapter)`
 
-Inspect it directly with:
+Inspecione diretamente com:
 
 ```bash
 kami db shell
