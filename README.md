@@ -2,7 +2,7 @@
 
 Um registro de leitura minimalista para mangás, manhwas, manhuas, web novels, quadrinhos e afins. Uma CLI pequena e rápida, com SQLite por baixo.
 
-O `kami` acompanha o que você está lendo, o que já leu e quando. Ele foi feito para não atrapalhar: um único arquivo de banco de dados, um punhado de comandos e saída `--json` para usar em scripts.
+O `kami` acompanha o que você está lendo, o que já leu e quando. Ele foi feito para não atrapalhar: um único arquivo de banco de dados, poucos de comandos e flag `--json` para usar em scripts.
 
 ---
 
@@ -21,8 +21,7 @@ O `kami` acompanha o que você está lendo, o que já leu e quando. Ele foi feit
 
 ## Instalação
 
-Comece clonando o repositório e entrando nele. Os comandos de instalação
-abaixo assumem que você está dentro do diretório do repositório:
+Comece clonando o repositório e entrando nele. Os comandos de instalação abaixo assumem que você está dentro do diretório do repositório:
 
 ```bash
 git clone <repository-url>
@@ -31,8 +30,7 @@ cd kami
 
 ### Opção 1: `uv` (recomendado)
 
-O [`uv`](https://docs.astral.sh/uv/) instala a CLI num ambiente isolado e cria um
-link para o executável `kami` em `~/.local/bin`.
+O [`uv`](https://docs.astral.sh/uv/) instala a CLI num ambiente isolado e cria um link para o executável `kami` em `~/.local/bin`.
 
 ```bash
 uv tool install .
@@ -56,8 +54,7 @@ uv tool update-shell
 
 ### Opção 2: `pipx`
 
-O [`pipx`](https://pipx.pypa.io/) cria um ambiente virtual dedicado para o `kami`
-e expõe o executável no seu `PATH`.
+O [`pipx`](https://pipx.pypa.io/) cria um ambiente virtual dedicado para o `kami` e expõe o executável no seu `PATH`.
 
 ```bash
 pipx install .
@@ -69,8 +66,7 @@ Para desenvolvimento:
 pipx install --editable .
 ```
 
-Se aparecer um erro de "command not found", verifique se o diretório de binários do pipx está no seu
-`PATH` (geralmente `~/.local/bin` no Linux/macOS):
+Se aparecer um erro de "command not found", verifique se o diretório de binários do pipx está no seu `PATH` (geralmente `~/.local/bin` no Linux/macOS):
 
 ```bash
 pipx ensurepath
@@ -153,14 +149,13 @@ kami show Frieren
 
 Valem para todos os comandos:
 
-| Opção             | Descrição                                          |
-| ----------------- | -------------------------------------------------- |
-| `--db PATH`       | Caminho para o banco SQLite (substitui `$KAMI_DB`) |
-| `--json`          | Saída em JSON para máquinas                        |
+| Opção             | Descrição                                                   |
+| ----------------- | ----------------------------------------------------------- |
+| `--db PATH`       | Caminho para o banco SQLite (substitui `$KAMI_DB`)          |
+| `--json`          | Saída em JSON para máquinas                                 |
 | `--verbose`, `-v` | Imprime informações de depuração (SQL, comandos executados) |
 
-`--json` vale para todos os comandos de dados listados em Recursos. `db shell` é
-interativo e ignora essa opção (passe argumentos extras depois de `db shell`).
+`--json` vale para todos os comandos de dados listados em Recursos. `db shell` é interativo e ignora essa opção (passe argumentos extras depois de `db shell`).
 
 ---
 
